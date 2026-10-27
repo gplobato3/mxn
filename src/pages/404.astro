@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import { productList } from '../data/catalog';
+---
+
+<Base title="Página no encontrada" noindex>
+  <section class="nf wrap">
+    <p class="eyebrow">Error 404</p>
+    <h1>Esta página no tiene <em class="italic">nombre</em></h1>
+    <p class="lead">Pero tu próximo collar sí. Elige un diseño para empezar:</p>
+    <div class="links">
+      {productList.map((p) => <a class="btn btn-ghost" href={`/disena/${p.slug}`}>{p.shortName}</a>)}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    padding-block: 96px 120px;
+    display: grid;
+    gap: 16px;
+    justify-items: center;
+    text-align: center;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+</style>

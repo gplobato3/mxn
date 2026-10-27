@@ -1,0 +1,116 @@
+---
+import Logo from './Logo.astro';
+import { productList } from '../data/catalog';
+import { store, whatsappEnabled, whatsappLink } from '../config/store';
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr">
+  <div class="wrap ftr-grid">
+    <div class="ftr-brand">
+      <Logo height={20} />
+      <p class="muted">{store.brand.tagline}. Collares personalizados con nombre, iniciales y mascotas. {store.brand.madeIn}.</p>
+    </div>
+
+    <nav aria-label="Diseños">
+      <p class="ftr-h">Diseños</p>
+      <ul>
+        {productList.map((p) => <li><a href={`/disena/${p.slug}`}>{p.shortName}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-label="Ayuda">
+      <p class="ftr-h">Ayuda</p>
+      <ul>
+        <li><a href="/#preguntas">Preguntas frecuentes</a></li>
+        <li><a href="/envios-y-devoluciones">Envíos, cambios y garantía</a></li>
+        <li><a href="/terminos">Términos y condiciones</a></li>
+        <li><a href="/privacidad">Aviso de privacidad</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <p class="ftr-h">Contacto</p>
+      <ul>
+        {whatsappEnabled && <li><a href={whatsappLink('Hola, tengo una pregunta.')} target="_blank" rel="noopener">WhatsApp</a></li>}
+        <li><a href={`mailto:${store.brand.email}`}>{store.brand.email}</a></li>
+        <li><a href={store.brand.instagram} target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href={store.brand.tiktok} target="_blank" rel="noopener">TikTok</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap ftr-bottom">
+    <p>© {year} {store.brand.name}. Precios en pesos mexicanos (MXN), IVA incluido.</p>
+    <p>Pago seguro · {store.payment.methodsNote}</p>
+  </div>
+</footer>
+
+<style>
+  .ftr {
+    background: var(--ink);
+    color: #e9dfd1;
+    padding-top: 64px;
+  }
+  .ftr :global(.logo) {
+    color: #f4ead9;
+  }
+  .ftr-grid {
+    display: grid;
+    gap: 36px;
+    grid-template-columns: 1fr 1fr;
+  }
+  .ftr-brand {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 14px;
+    max-width: 30em;
+  }
+  .ftr .muted {
+    color: #b7a998;
+    font-size: 0.9rem;
+  }
+  .ftr-h {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--gold-soft);
+    margin-bottom: 12px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    font-size: 0.92rem;
+  }
+  a {
+    text-decoration: none;
+    color: #e9dfd1;
+  }
+  a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+  .ftr-bottom {
+    margin-top: 48px;
+    padding-block: 22px calc(22px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+    display: grid;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: #a3958a;
+  }
+  @media (min-width: 900px) {
+    .ftr-grid {
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+    }
+    .ftr-brand {
+      grid-column: auto;
+    }
+    .ftr-bottom {
+      grid-template-columns: 1fr auto;
+    }
+  }
+</style>

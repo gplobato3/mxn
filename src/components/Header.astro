@@ -1,0 +1,331 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { productList } from '../data/catalog';
+import { store, whatsappEnabled, whatsappLink } from '../config/store';
+const path = Astro.url.pathname;
+const { minimal = false } = Astro.props as { minimal?: boolean };
+---
+
+{
+  minimal ? (
+    <header class="hdr hdr-min">
+      <div class="hdr-in wrap">
+        <a href="/" class="back" aria-label="Volver a la tienda">
+          <Icon name="arrow" size={18} class="flip" />
+          <span>Tienda</span>
+        </a>
+        <a href="/" class="brand" aria-label={`${store.brand.name}, inicio`}>
+          <Logo height={16} />
+        </a>
+        <span class="secure">
+          <Icon name="lock" size={16} />
+          <span>Pago seguro</span>
+        </span>
+      </div>
+    </header>
+  ) : (
+<header class="hdr" data-header>
+  <div class="hdr-in wrap">
+    <button class="icon-btn menu-btn" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu" data-menu-open>
+      <Icon name="menu" size={22} />
+    </button>
+
+    <nav class="nav-desk" aria-label="Diseños">
+      {
+        productList.map((p) => (
+          <a href={`/disena/${p.slug}`} aria-current={path.endsWith(`/disena/${p.slug}`) ? 'page' : undefined}>
+            {p.shortName}
+          </a>
+        ))
+      }
+    </nav>
+
+    <a href="/" class="brand" aria-label={`${store.brand.name}, inicio`}>
+      <Logo height={17} />
+    </a>
+
+    <div class="hdr-right">
+      <a href="/#preguntas" class="nav-help">Ayuda</a>
+      <button class="icon-btn bag-btn" type="button" aria-label="Abrir bolsa" data-cart-open>
+        <Icon name="bag" size={22} />
+        <span class="bag-count" data-cart-count hidden>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+  )
+}
+
+<div class="menu" id="menu" data-menu hidden>
+  <div class="menu-backdrop" data-menu-close></div>
+  <div class="menu-panel" role="dialog" aria-modal="true" aria-label="Menú">
+    <div class="menu-top">
+      <Logo height={15} />
+      <button class="icon-btn" type="button" aria-label="Cerrar menú" data-menu-close>
+        <Icon name="close" size={22} />
+      </button>
+    </div>
+    <p class="eyebrow">Diseña el tuyo</p>
+    <ul class="menu-list">
+      {
+        productList.map((p) => (
+          <li>
+            <a href={`/disena/${p.slug}`}>
+              <span>{p.shortName}</span>
+              <Icon name="chevron" size={18} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <hr class="divider" />
+    <ul class="menu-list small">
+      <li><a href="/#materiales">Materiales</a></li>
+      <li><a href="/#preguntas">Preguntas frecuentes</a></li>
+      <li><a href="/envios-y-devoluciones">Envíos y cambios</a></li>
+      {
+        whatsappEnabled && (
+          <li>
+            <a href={whatsappLink('Hola, tengo una pregunta sobre un collar personalizado.')} target="_blank" rel="noopener">
+              Escríbenos por WhatsApp
+            </a>
+          </li>
+        )
+      }
+    </ul>
+  </div>
+</div>
+
+<style>
+  .hdr {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgb(248 244 238 / 0.86);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  :global(.scrolled) .hdr {
+    border-bottom-color: var(--line);
+  }
+  .hdr-in {
+    height: var(--header-h);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+  .brand {
+    grid-column: 2;
+    display: inline-flex;
+    padding: 8px;
+    color: var(--ink);
+  }
+  .hdr-right {
+    grid-column: 3;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    display: inline-grid;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    border-radius: 999px;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .icon-btn:hover {
+    background: rgb(31 25 21 / 0.05);
+  }
+  .menu-btn {
+    grid-column: 1;
+    justify-self: start;
+    margin-left: -10px;
+  }
+  .bag-btn {
+    margin-right: -10px;
+  }
+  .bag-count {
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 99px;
+    background: var(--ink);
+    color: var(--ivory);
+    font-size: 0.66rem;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+  }
+  .bag-count.bump {
+    animation: bump 0.5s var(--ease);
+  }
+  @keyframes bump {
+    40% {
+      transform: scale(1.35);
+    }
+  }
+  .nav-desk,
+  .nav-help {
+    display: none;
+  }
+  .hdr-min .back,
+  .hdr-min .secure {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+  .hdr-min .back {
+    grid-column: 1;
+    justify-self: start;
+  }
+  .hdr-min .secure {
+    grid-column: 3;
+    justify-self: end;
+  }
+  .hdr-min :global(.flip) {
+    transform: scaleX(-1);
+  }
+  @media (min-width: 900px) {
+    .menu-btn {
+      display: none;
+    }
+    .nav-desk {
+      grid-column: 1;
+      display: flex;
+      gap: 28px;
+      font-size: 0.86rem;
+      font-weight: 500;
+    }
+    .nav-desk a,
+    .nav-help {
+      text-decoration: none;
+      color: var(--ink-2);
+      position: relative;
+      padding-block: 6px;
+    }
+    .nav-desk a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: var(--ink);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s var(--ease);
+    }
+    .nav-desk a:hover::after,
+    .nav-desk a[aria-current='page']::after {
+      transform: scaleX(1);
+    }
+    .nav-help {
+      display: inline;
+      font-size: 0.86rem;
+      font-weight: 500;
+      margin-right: 14px;
+    }
+  }
+
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+  }
+  .menu-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgb(31 25 21 / 0.36);
+    opacity: 0;
+    transition: opacity 0.35s;
+  }
+  .menu-panel {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: min(86vw, 380px);
+    background: var(--ivory);
+    padding: 18px 22px 32px;
+    display: grid;
+    align-content: start;
+    gap: 18px;
+    transform: translateX(-100%);
+    transition: transform 0.45s var(--ease);
+    overflow-y: auto;
+  }
+  .menu.open .menu-backdrop {
+    opacity: 1;
+  }
+  .menu.open .menu-panel {
+    transform: none;
+  }
+  .menu-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+  }
+  .menu-list a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .menu-list.small a {
+    font-family: var(--sans);
+    font-size: 0.98rem;
+    padding: 11px 0;
+    border: 0;
+    color: var(--ink-2);
+  }
+</style>
+
+<script>
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  function setMenu(open: boolean) {
+    if (!menu || !openBtn) return;
+    if (open) {
+      menu.hidden = false;
+      requestAnimationFrame(() => menu.classList.add('open'));
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      menu.classList.remove('open');
+      document.documentElement.style.overflow = '';
+      setTimeout(() => (menu.hidden = true), 400);
+    }
+    openBtn.setAttribute('aria-expanded', String(open));
+  }
+  openBtn?.addEventListener('click', () => setMenu(true));
+  menu?.querySelectorAll('[data-menu-close]').forEach((el) => el.addEventListener('click', () => setMenu(false)));
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && setMenu(false));
+
+  const onScroll = () => document.documentElement.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>

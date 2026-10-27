@@ -1,0 +1,19 @@
+---
+import wordmark from '../assets/brand/wordmark.svg?raw';
+interface Props {
+  class?: string;
+  height?: number;
+}
+const { class: cls, height = 18 } = Astro.props;
+const svg = wordmark.replace('<svg ', `<svg height="${height}" style="height:${height}px;width:auto" `);
+---
+
+<span class:list={['logo', cls]} set:html={svg} />
+
+<style>
+  .logo {
+    display: inline-flex;
+    color: currentColor;
+    line-height: 0;
+  }
+</style>

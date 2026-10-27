@@ -1,0 +1,121 @@
+---
+import '../styles/global.css';
+import Announcement from '../components/Announcement.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CartDrawer from '../components/CartDrawer.astro';
+import { store } from '../config/store';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+  bare?: boolean; // checkout: sem distrações
+}
+
+const {
+  title,
+  description = 'Collares personalizados con nombre, iniciales o la silueta de tu mascota. Baño de oro 18k o plata .950. Mira cómo queda antes de pagar y recíbelo en todo México.',
+  image = '/og.jpg',
+  noindex = false,
+  jsonLd = [],
+  bare = false,
+} = Astro.props;
+
+const fullTitle = title ? `${title} | ${store.brand.name}` : `${store.brand.name} · Collares con nombre grabado en oro y plata`;
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+const { metaPixelId, tiktokPixelId } = store.analytics;
+
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: store.brand.name,
+  url: Astro.site?.href,
+  logo: new URL('/brand/logo-full.svg', Astro.site).href,
+  sameAs: [store.brand.instagram, store.brand.tiktok],
+};
+---
+
+<!doctype html>
+<html lang="es-MX" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#f8f4ee" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href="/fonts/cormorant-garamond-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/manrope-var.woff2" as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_MX" />
+    <meta property="og:site_name" content={store.brand.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline>
+      document.documentElement.classList.remove('no-js');
+    </script>
+
+    <script type="application/ld+json" set:html={JSON.stringify([org, ...jsonLd])} />
+
+    {
+      metaPixelId && (
+        <script is:inline define:vars={{ metaPixelId }}>
+          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', metaPixelId); fbq('track', 'PageView');
+        </script>
+      )
+    }
+    {
+      tiktokPixelId && (
+        <script is:inline define:vars={{ tiktokPixelId }}>
+          !function (w, d, t) {w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};ttq.load(tiktokPixelId);ttq.page();}(window, document, 'ttq');
+        </script>
+      )
+    }
+    <slot name="head" />
+  </head>
+  <body>
+    {!bare && <Announcement />}
+    <Header minimal={bare} />
+    <main id="contenido">
+      <slot />
+    </main>
+    {!bare && <Footer />}
+    <CartDrawer />
+
+    <script>
+      // revelação suave ao rolar
+      const els = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      if ('IntersectionObserver' in window && els.length) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-in');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+        els.forEach((el) => io.observe(el));
+      } else {
+        els.forEach((el) => el.classList.add('is-in'));
+      }
+    </script>
+  </body>
+</html>

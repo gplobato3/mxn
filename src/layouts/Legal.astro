@@ -1,0 +1,54 @@
+---
+import Base from './Base.astro';
+interface Props {
+  title: string;
+  updated: string;
+}
+const { title, updated } = Astro.props;
+---
+
+<Base title={title}>
+  <article class="legal wrap">
+    <header>
+      <p class="eyebrow">Información legal</p>
+      <h1>{title}</h1>
+      <p class="muted">Última actualización: {updated}</p>
+    </header>
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .legal {
+    max-width: 760px;
+    padding-block: 48px 96px;
+  }
+  header {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  h1 {
+    font-size: clamp(2.2rem, 6vw, 3.2rem);
+  }
+  .prose :global(h2) {
+    font-size: 1.6rem;
+    margin: 34px 0 10px;
+  }
+  .prose :global(p),
+  .prose :global(li) {
+    color: var(--ink-2);
+    font-size: 0.98rem;
+  }
+  .prose :global(p + p) {
+    margin-top: 12px;
+  }
+  .prose :global(ul) {
+    padding-left: 20px;
+    display: grid;
+    gap: 8px;
+    margin: 12px 0;
+  }
+</style>

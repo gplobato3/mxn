@@ -1,0 +1,54 @@
+---
+import Icon from '../Icon.astro';
+import { productList } from '../../data/catalog';
+---
+
+<section class="final grain">
+  <div class="wrap inner">
+    <p class="eyebrow" data-reveal>Empieza con un nombre</p>
+    <h2 data-reveal style="--d:.06s">¿A quién se lo vas <em class="italic">a dedicar?</em></h2>
+    <div class="ctas" data-reveal style="--d:.12s">
+      {
+        productList.map((p, i) => (
+          <a href={`/disena/${p.slug}`} class:list={['btn', i === 0 ? 'btn-gold' : 'btn-ghost light']}>
+            {p.shortName} {i === 0 && <Icon name="arrow" size={18} />}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .final {
+    position: relative;
+    background: radial-gradient(120% 120% at 50% 0%, #3a2d24, #1f1915 70%);
+    color: #f4ead9;
+    text-align: center;
+    padding-block: clamp(72px, 11vw, 140px);
+    overflow: hidden;
+  }
+  .inner {
+    position: relative;
+    display: grid;
+    gap: 18px;
+    justify-items: center;
+  }
+  .eyebrow {
+    color: var(--gold-soft);
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  .light {
+    --fg: #f4ead9;
+    box-shadow: inset 0 0 0 1px rgb(244 234 217 / 0.35);
+  }
+  .light:hover {
+    box-shadow: inset 0 0 0 1px #f4ead9;
+  }
+</style>

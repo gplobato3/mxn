@@ -1,0 +1,71 @@
+---
+import { store } from '../../config/store';
+const steps = [
+  { n: '01', t: 'Escribe el nombre', d: 'Mira en vivo cómo queda en la pieza y sobre el cuello. Elige letra, metal y largo.' },
+  { n: '02', t: 'Confirmamos contigo', d: 'Antes de grabar te escribimos por WhatsApp para revisar la ortografía. Cero sorpresas.' },
+  { n: '03', t: 'Grabamos y enviamos', d: `${store.brand.madeIn} en ${store.timing.productionDays}. Lo recibes en ${store.timing.totalDays} con guía de rastreo.` },
+];
+---
+
+<section class="section steps">
+  <div class="wrap">
+    <div class="section-head center">
+      <p class="eyebrow" data-reveal>Así de fácil</p>
+      <h2 data-reveal style="--d:.06s">De tu idea a su cuello <em class="italic">en días</em></h2>
+    </div>
+    <ol>
+      {
+        steps.map((s, i) => (
+          <li data-reveal style={`--d:${0.1 * i}s`}>
+            <span class="n">{s.n}</span>
+            <h3>{s.t}</h3>
+            <p class="muted">{s.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .steps {
+    background: var(--paper);
+    border-block: 1px solid var(--line);
+  }
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+  li {
+    display: grid;
+    gap: 8px;
+    padding: 24px 22px;
+    border-radius: var(--radius);
+    background: var(--ivory);
+    border: 1px solid var(--line);
+  }
+  .n {
+    font-family: var(--serif);
+    font-size: 2.6rem;
+    line-height: 1;
+    background: var(--gold-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  li p {
+    font-size: 0.94rem;
+  }
+  @media (min-width: 900px) {
+    ol {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+    li {
+      padding: 34px 30px;
+    }
+  }
+</style>

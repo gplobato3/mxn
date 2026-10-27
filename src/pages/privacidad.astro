@@ -1,0 +1,44 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { store } from '../config/store';
+const b = store.brand;
+---
+
+<Legal title="Aviso de privacidad" updated="27 de octubre de 2026">
+  <p>
+    En cumplimiento de la Ley Federal de Protección de Datos Personales en Posesión de los Particulares, {b.legalName} (“{b.name}”), con domicilio en {b.legalAddress}, es responsable
+    del tratamiento de tus datos personales.
+  </p>
+
+  <h2>Datos que recabamos</h2>
+  <ul>
+    <li>Identificación y contacto: nombre, correo electrónico y número de WhatsApp.</li>
+    <li>Envío: domicilio, código postal y referencias.</li>
+    <li>Pedido: textos que eliges grabar, dedicatorias y preferencias del diseño.</li>
+    <li>Navegación: cookies e identificadores de publicidad (por ejemplo, píxeles de Meta y TikTok), si los aceptas en tu navegador.</li>
+  </ul>
+  <p>No recabamos datos personales sensibles. Los datos de pago los procesa directamente la pasarela de pago; {b.name} no almacena números de tarjeta.</p>
+
+  <h2>Para qué usamos tus datos</h2>
+  <p>Finalidades necesarias: procesar y producir tu pedido, confirmar la ortografía del grabado, enviarlo, darte seguimiento y atender aclaraciones o garantías.</p>
+  <p>
+    Finalidades secundarias: enviarte promociones y medir el desempeño de nuestros anuncios. Si no deseas que usemos tus datos para estas finalidades, escríbenos a {b.email}; esto no
+    afecta tu compra.
+  </p>
+
+  <h2>Con quién compartimos tus datos</h2>
+  <ul>
+    <li>Empresas de paquetería, únicamente para entregar tu pedido.</li>
+    <li>Procesadores de pago, para cobrar tu compra.</li>
+    <li>Proveedores de tecnología que nos ayudan a operar la tienda, bajo obligaciones de confidencialidad.</li>
+  </ul>
+
+  <h2>Tus derechos ARCO</h2>
+  <p>
+    Puedes acceder, rectificar, cancelar u oponerte al tratamiento de tus datos, así como revocar tu consentimiento, enviando una solicitud a {b.email} con tu nombre, el derecho que
+    deseas ejercer y una identificación. Te responderemos en un plazo máximo de 20 días hábiles.
+  </p>
+
+  <h2>Cambios a este aviso</h2>
+  <p>Cualquier cambio a este aviso se publicará en esta página.</p>
+</Legal>

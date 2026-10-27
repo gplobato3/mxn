@@ -1,0 +1,16 @@
+# build
+dist/
+.astro/
+node_modules/
+
+# fotos originales sin optimizar (se regeneran con scripts/generate-images.py)
+.image-raw/
+
+# secretos
+.env
+.env.*
+!.env.example
+
+# sistema
+.DS_Store
+*.log

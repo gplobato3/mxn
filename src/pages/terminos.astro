@@ -1,0 +1,37 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { store } from '../config/store';
+const b = store.brand;
+---
+
+<Legal title="Términos y condiciones" updated="27 de octubre de 2026">
+  <p>
+    Estos términos regulan las compras en la tienda en línea de {b.name}, operada por {b.legalName}, RFC {b.rfc}, con domicilio en {b.legalAddress}. Al hacer un pedido aceptas estos
+    términos.
+  </p>
+
+  <h2>Precios y pago</h2>
+  <ul>
+    <li>Todos los precios están en pesos mexicanos (MXN) e incluyen IVA.</li>
+    <li>El pedido se confirma cuando el pago es aprobado. Métodos disponibles: {store.payment.methodsNote}.</li>
+    <li>Nos reservamos el derecho de cancelar y reembolsar pedidos con errores evidentes de precio o sospecha de fraude.</li>
+  </ul>
+
+  <h2>Piezas personalizadas</h2>
+  <ul>
+    <li>La vista previa en el sitio es ilustrativa de la posición, la letra y el metal; el tamaño real de cada pieza se indica en su descripción.</li>
+    <li>Grabamos exactamente el texto que confirmas. Antes de grabar te pedimos confirmarlo por WhatsApp.</li>
+    <li>No grabamos textos ofensivos o que infrinjan derechos de terceros (por ejemplo, marcas registradas).</li>
+  </ul>
+
+  <h2>Producción, envío y garantía</h2>
+  <p>
+    Los tiempos de producción y entrega, así como las condiciones de cambios y garantía, se describen en la página de <a href="/envios-y-devoluciones">envíos, cambios y garantía</a>.
+  </p>
+
+  <h2>Atención y quejas</h2>
+  <p>
+    Para cualquier aclaración escríbenos a {b.email}. También puedes acudir a la Procuraduría Federal del Consumidor (Profeco). Estos términos se rigen por las leyes de los Estados
+    Unidos Mexicanos.
+  </p>
+</Legal>

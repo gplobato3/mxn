@@ -1,0 +1,42 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { store, whatsappEnabled, whatsappLink } from '../config/store';
+const t = store.timing;
+---
+
+<Legal title="Envíos, cambios y garantía" updated="27 de octubre de 2026">
+  <h2>Producción</h2>
+  <p>
+    Cada pieza se graba cuando haces tu pedido. Antes de grabar te escribimos por WhatsApp para confirmar la ortografía del nombre. La producción toma {t.productionDays} a partir de
+    esa confirmación y del pago aprobado.
+  </p>
+
+  <h2>Envíos</h2>
+  <ul>
+    {store.shipping.filter((s) => s.enabled).map((s) => <li><strong>{s.label}:</strong> {s.detail} {s.price ? `Costo: $${s.price} MXN.` : 'Sin costo.'}</li>)}
+    <li>Enviamos a toda la República Mexicana con número de guía, que te compartimos por correo y WhatsApp.</li>
+    <li>El tiempo total estimado es de {t.totalDays}. En zonas extendidas la paquetería puede tardar uno o dos días más.</li>
+  </ul>
+
+  <h2>Cambios y devoluciones</h2>
+  <p>
+    Como cada collar se graba con el texto que eliges, no aceptamos cambios ni devoluciones por gusto o por error en los datos que nos confirmaste, una vez grabada la pieza.
+  </p>
+  <p>Reponemos tu pieza sin costo cuando:</p>
+  <ul>
+    <li>Llega con un defecto de fabricación o dañada por el envío.</li>
+    <li>El grabado no coincide con el texto que confirmaste con nosotros.</li>
+    <li>El paquete se pierde durante el envío.</li>
+  </ul>
+  <p>
+    Escríbenos dentro de los {store.claimDays} días naturales posteriores a la entrega con tu número de pedido y una foto de la pieza{whatsappEnabled ? ' por WhatsApp' : ''} o a {store.brand.email}. Tus derechos como consumidor conforme a la Ley Federal de Protección al Consumidor no se ven limitados por esta política.
+  </p>
+
+  <h2>Garantía</h2>
+  <p>
+    Todas las piezas tienen garantía de {store.warrantyDays} días contra defectos de fabricación (soldaduras, broches, argollas). La garantía no cubre desgaste por uso, contacto con químicos (perfume,
+    cloro, cremas), golpes o pérdida.
+  </p>
+
+  {whatsappEnabled && <p><a href={whatsappLink('Hola, necesito ayuda con mi pedido.')}>Escríbenos por WhatsApp</a></p>}
+</Legal>

@@ -1,0 +1,657 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { mxStates } from '../data/mx-states';
+import { store } from '../config/store';
+const shipping = store.shipping.filter((s) => s.enabled);
+const isEndpoint = store.payment.mode === 'endpoint';
+---
+
+<Base title="Finalizar compra" noindex bare>
+  <section class="co" data-co>
+    <div class="wrap co-grid">
+      <!-- RESUMO -->
+      <aside class="summary" aria-label="Resumen del pedido">
+        <button type="button" class="sum-toggle" aria-expanded="false" data-sum-toggle>
+          <span><Icon name="bag" size={18} /> <span data-sum-label>Ver resumen</span></span>
+          <strong data-sum-total-top>$0</strong>
+        </button>
+        <div class="sum-body" data-sum-body>
+          <ul class="items" data-items></ul>
+          <dl class="totals">
+            <div><dt>Subtotal</dt><dd data-t-sub></dd></div>
+            <div data-t-disc-row hidden><dt>Descuento por 2 piezas</dt><dd class="ok" data-t-disc></dd></div>
+            <div><dt>Envío</dt><dd data-t-ship></dd></div>
+            <div class="grand"><dt>Total</dt><dd><small>MXN</small> <span data-t-total></span></dd></div>
+          </dl>
+          <p class="sum-note"><Icon name="check" size={15} /> Precios con IVA incluido</p>
+        </div>
+      </aside>
+
+      <!-- FORMULÁRIO -->
+      <form class="co-form" data-form novalidate>
+        <div class="empty card" data-empty hidden>
+          <p class="display-sm">Tu bolsa está vacía</p>
+          <a href="/" class="btn">Volver a la tienda</a>
+        </div>
+
+        <fieldset class="block">
+          <legend><span class="num">1</span> Contacto</legend>
+          <div class="field">
+            <label for="email">Correo electrónico</label>
+            <input class="input" id="email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="tu@correo.com" />
+          </div>
+          <div class="field">
+            <label for="phone">WhatsApp</label>
+            <div class="phone">
+              <span class="cc">+52</span>
+              <input class="input" id="phone" name="phone" type="tel" autocomplete="tel-national" inputmode="tel" required placeholder="10 dígitos" maxlength="14" />
+            </div>
+            <p class="hint">Por aquí te confirmamos la ortografía y te enviamos la guía de rastreo.</p>
+          </div>
+        </fieldset>
+
+        <fieldset class="block">
+          <legend><span class="num">2</span> Envío</legend>
+          <div class="field">
+            <label for="name">Nombre y apellido de quien recibe</label>
+            <input class="input" id="name" name="name" autocomplete="name" required />
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="cp">Código postal</label>
+              <input class="input" id="cp" name="postalCode" inputmode="numeric" autocomplete="postal-code" maxlength="5" pattern="[0-9]{5}" required data-cp />
+            </div>
+            <div class="field">
+              <label for="state">Estado</label>
+              <select class="select" id="state" name="state" autocomplete="address-level1" required>
+                <option value="">Elige</option>
+                {mxStates.map((s) => <option value={s}>{s}</option>)}
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="street">Calle y número</label>
+            <input class="input" id="street" name="street" autocomplete="address-line1" required placeholder="Ej. Av. Álvaro Obregón 120" />
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="interior">Interior (opcional)</label>
+              <input class="input" id="interior" name="interior" autocomplete="address-line2" placeholder="Depto. 4B" />
+            </div>
+            <div class="field">
+              <label for="colonia">Colonia</label>
+              <input class="input" id="colonia" name="colonia" list="colonias" autocomplete="address-level3" required />
+              <datalist id="colonias" data-colonias></datalist>
+            </div>
+          </div>
+          <div class="field">
+            <label for="city">Ciudad o municipio / alcaldía</label>
+            <input class="input" id="city" name="city" autocomplete="address-level2" required />
+          </div>
+          <div class="field">
+            <label for="references">Referencias (opcional)</label>
+            <input class="input" id="references" name="references" placeholder="Entre calles, color de la fachada…" />
+          </div>
+
+          <div class="ship-opts">
+            {
+              shipping.map((s, i) => (
+                <label class="ship">
+                  <input type="radio" name="shipping" value={s.id} checked={i === 0} data-ship-price={s.price} />
+                  <span>
+                    <strong>{s.label}</strong>
+                    <small>{s.detail}</small>
+                    <b>{s.price ? `$${s.price}` : 'Gratis'}</b>
+                  </span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="block">
+          <legend><span class="num">3</span> {isEndpoint ? 'Pago' : 'Confirmación'}</legend>
+          <label class="confirm">
+            <input type="checkbox" name="spelling" required data-spelling />
+            <span>Revisé que los nombres estén escritos exactamente como los quiero grabar.</span>
+          </label>
+          {
+            isEndpoint ? (
+              <p class="pay-note">
+                <Icon name="lock" size={16} /> Serás dirigido a un pago seguro: {store.payment.methodsNote}.
+              </p>
+            ) : (
+              <div class="pay-note card">
+                <Icon name="whatsapp" size={20} />
+                <p>
+                  Al confirmar, apartamos tu pedido y te enviamos por WhatsApp el <strong>enlace de pago seguro</strong> ({store.payment.methodsNote}). Solo grabamos tu pieza
+                  cuando el pago está confirmado.
+                </p>
+              </div>
+            )
+          }
+          <p class="error-text" data-form-error hidden></p>
+          <button class="btn btn-block submit" type="submit" data-submit>
+            <Icon name="lock" size={18} />
+            <span>{isEndpoint ? 'Pagar' : 'Confirmar pedido'}</span>
+            <span aria-hidden="true">·</span>
+            <span data-btn-total></span>
+          </button>
+          <p class="legal">
+            Al continuar aceptas los <a href="/terminos" target="_blank">Términos</a> y el <a href="/privacidad" target="_blank">Aviso de privacidad</a>.
+          </p>
+        </fieldset>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .co {
+    padding: 18px 0 64px;
+  }
+  .co-grid {
+    display: grid;
+    gap: 18px;
+    max-width: 1080px;
+  }
+  .summary {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .sum-toggle {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px;
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+  .sum-toggle > span {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .sum-body {
+    display: none;
+    padding: 0 18px 18px;
+  }
+  .summary.open .sum-body {
+    display: block;
+  }
+  .items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .items :global(li) {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .items :global(.thumb) {
+    width: 64px;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    background: radial-gradient(120% 90% at 50% 30%, #fbf7f1, #ece2d4);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+  .items :global(.thumb svg) {
+    width: 170%;
+    max-width: none;
+  }
+  .items :global(.q) {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 99px;
+    background: var(--ink);
+    color: #fff;
+    font-size: 0.66rem;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+  }
+  .items :global(.it-t) {
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+  .items :global(.it-x) {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.1rem;
+    line-height: 1.15;
+  }
+  .items :global(.it-m) {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .items :global(.it-p) {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .totals {
+    margin: 12px 0 0;
+    display: grid;
+    gap: 7px;
+    font-size: 0.9rem;
+  }
+  .totals div {
+    display: flex;
+    justify-content: space-between;
+  }
+  .totals dt {
+    color: var(--muted);
+  }
+  .totals dd {
+    margin: 0;
+    font-weight: 600;
+  }
+  .totals .ok {
+    color: var(--ok);
+  }
+  .totals .grand {
+    border-top: 1px solid var(--line-2);
+    padding-top: 10px;
+    margin-top: 4px;
+    font-size: 1.1rem;
+  }
+  .totals .grand dt {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .totals small {
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .sum-note {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+
+  .co-form {
+    display: grid;
+    gap: 16px;
+  }
+  .block {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    margin: 0;
+    padding: 20px 18px;
+    display: grid;
+    gap: 16px;
+    min-width: 0;
+  }
+  legend {
+    float: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--serif);
+    font-size: 1.55rem;
+    margin-bottom: 4px;
+  }
+  legend + * {
+    clear: both;
+  }
+  .num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-grid;
+    place-items: center;
+    background: var(--ink);
+    color: var(--ivory);
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .row2 {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 12px;
+  }
+  .phone {
+    display: grid;
+    grid-template-columns: auto 1fr;
+  }
+  .cc {
+    display: grid;
+    place-items: center;
+    padding: 0 14px;
+    border: 1px solid var(--line-2);
+    border-right: 0;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    background: var(--sand);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .phone .input {
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .ship-opts {
+    display: grid;
+    gap: 8px;
+  }
+  .ship {
+    position: relative;
+    display: block;
+  }
+  .ship input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .ship span {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--line-2);
+    pointer-events: none;
+  }
+  .ship input:checked + span {
+    border-color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--ink);
+  }
+  .ship strong {
+    font-size: 0.92rem;
+  }
+  .ship small {
+    grid-column: 1;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .ship b {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    align-self: center;
+  }
+  .confirm {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: start;
+    font-size: 0.92rem;
+    cursor: pointer;
+  }
+  .confirm input {
+    width: 20px;
+    height: 20px;
+    margin: 2px 0 0;
+    accent-color: var(--ink);
+  }
+  .pay-note {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 0.86rem;
+    color: var(--ink-2);
+  }
+  .pay-note.card {
+    padding: 14px;
+    background: var(--ivory);
+  }
+  .pay-note :global(svg) {
+    flex: none;
+    color: var(--ok);
+    margin-top: 1px;
+  }
+  .submit {
+    min-height: 60px;
+    font-size: 1rem;
+  }
+  .legal {
+    font-size: 0.74rem;
+    color: var(--muted);
+    text-align: center;
+  }
+  .display-sm {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+  }
+  .empty {
+    padding: 32px;
+    display: grid;
+    gap: 14px;
+    justify-items: center;
+    text-align: center;
+  }
+
+  @media (min-width: 900px) {
+    .co {
+      padding-top: 36px;
+    }
+    .co-grid {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 36px;
+      align-items: start;
+    }
+    .summary {
+      order: 2;
+      position: sticky;
+      top: calc(var(--header-h) + 20px);
+    }
+    .sum-toggle {
+      pointer-events: none;
+    }
+    .sum-toggle [data-sum-label]::after {
+      content: '';
+    }
+    .sum-body {
+      display: block;
+    }
+    .block {
+      padding: 26px 26px;
+    }
+  }
+</style>
+
+<script>
+  import { cart } from '../lib/cart';
+  import { describeDesign, products } from '../data/catalog';
+  import { renderStudio, loadPreviewFonts } from '../lib/pendant';
+  import { money } from '../lib/format';
+  import { track } from '../lib/track';
+  import { buildOrder, saveOrder } from '../lib/order';
+  import { matchState } from '../data/mx-states';
+  import { store } from '../config/store';
+
+  const root = document.querySelector<HTMLElement>('[data-co]')!;
+  const form = root.querySelector<HTMLFormElement>('[data-form]')!;
+  const summary = root.querySelector<HTMLElement>('.summary')!;
+  const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+  function shippingPrice(): number {
+    const r = form.querySelector<HTMLInputElement>('input[name="shipping"]:checked');
+    return Number(r?.dataset.shipPrice || 0);
+  }
+
+  function render() {
+    const lines = cart.lines();
+    const empty = lines.length === 0;
+    root.querySelector<HTMLElement>('[data-empty]')!.hidden = !empty;
+    form.querySelectorAll<HTMLElement>('fieldset').forEach((f) => (f.hidden = empty));
+    summary.hidden = empty;
+
+    root.querySelector('[data-items]')!.innerHTML = lines
+      .map(
+        (l) => `<li>
+        <div class="thumb">${renderStudio(l.design)}${l.qty > 1 ? `<span class="q">${l.qty}</span>` : ''}</div>
+        <div><p class="it-t">${esc(products[l.design.product].shortName)}</p><p class="it-x">“${esc(l.design.text)}”</p><p class="it-m">${esc(describeDesign(l.design))}${l.design.giftBox ? ' · Estuche' : ''}</p></div>
+        <span class="it-p">${money(cart.unit(l) * l.qty)}</span>
+      </li>`,
+      )
+      .join('');
+    const t = cart.totals(shippingPrice());
+    root.querySelector('[data-t-sub]')!.textContent = money(t.subtotal);
+    root.querySelector('[data-t-disc]')!.textContent = `−${money(t.discount)}`;
+    root.querySelector<HTMLElement>('[data-t-disc-row]')!.hidden = !t.discount;
+    root.querySelector('[data-t-ship]')!.textContent = t.shipping ? money(t.shipping) : 'Gratis';
+    root.querySelector('[data-t-total]')!.textContent = money(t.total);
+    root.querySelector('[data-sum-total-top]')!.textContent = money(t.total);
+    root.querySelector('[data-btn-total]')!.textContent = money(t.total);
+    return t;
+  }
+
+  root.querySelector('[data-sum-toggle]')?.addEventListener('click', (e) => {
+    const open = summary.classList.toggle('open');
+    (e.currentTarget as HTMLElement).setAttribute('aria-expanded', String(open));
+    root.querySelector('[data-sum-label]')!.textContent = open ? 'Ocultar resumen' : 'Ver resumen';
+  });
+
+  form.addEventListener('change', (e) => {
+    if ((e.target as HTMLInputElement).name === 'shipping') render();
+  });
+
+  // CP -> estado e colônias
+  const cp = form.querySelector<HTMLInputElement>('[data-cp]')!;
+  cp.addEventListener('input', async () => {
+    cp.value = cp.value.replace(/\D/g, '').slice(0, 5);
+    if (cp.value.length !== 5) return;
+    try {
+      const res = await fetch(`https://api.zippopotam.us/mx/${cp.value}`);
+      if (!res.ok) return;
+      const data = (await res.json()) as { places: { 'place name': string; state: string }[] };
+      const st = matchState(data.places[0]?.state || '');
+      const sel = form.querySelector<HTMLSelectElement>('#state')!;
+      if (st) sel.value = st;
+      const names = [...new Set(data.places.map((p) => p['place name']))];
+      form.querySelector('[data-colonias]')!.innerHTML = names.map((n) => `<option value="${esc(n)}"></option>`).join('');
+      const col = form.querySelector<HTMLInputElement>('#colonia')!;
+      if (names.length === 1 && !col.value) col.value = names[0];
+    } catch {
+      /* sem rede: o cliente preenche à mão */
+    }
+  });
+
+  const phone = form.querySelector<HTMLInputElement>('#phone')!;
+  phone.addEventListener('input', () => {
+    phone.value = phone.value.replace(/[^\d ]/g, '').slice(0, 14);
+  });
+
+  function fail(msg: string, el?: HTMLElement | null) {
+    const box = form.querySelector<HTMLElement>('[data-form-error]')!;
+    box.textContent = msg;
+    box.hidden = false;
+    if (el) {
+      el.setAttribute('aria-invalid', 'true');
+      el.focus();
+    }
+  }
+
+  form.addEventListener('input', (e) => (e.target as HTMLElement).removeAttribute('aria-invalid'));
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const box = form.querySelector<HTMLElement>('[data-form-error]')!;
+    box.hidden = true;
+    const fd = new FormData(form);
+    const get = (k: string) => String(fd.get(k) || '').trim();
+
+    const required: [string, string][] = [
+      ['email', 'Escribe tu correo electrónico.'],
+      ['phone', 'Escribe tu número de WhatsApp.'],
+      ['name', 'Escribe el nombre de quien recibe.'],
+      ['postalCode', 'Escribe tu código postal.'],
+      ['state', 'Elige tu estado.'],
+      ['street', 'Escribe calle y número.'],
+      ['colonia', 'Escribe tu colonia.'],
+      ['city', 'Escribe tu ciudad o municipio.'],
+    ];
+    for (const [k, msg] of required) {
+      if (!get(k)) return fail(msg, form.querySelector<HTMLElement>(`[name="${k}"]`));
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(get('email'))) return fail('Revisa tu correo electrónico.', form.querySelector('#email'));
+    const digits = get('phone').replace(/\D/g, '');
+    if (digits.length !== 10) return fail('El WhatsApp debe tener 10 dígitos.', phone);
+    if (!/^\d{5}$/.test(get('postalCode'))) return fail('El código postal tiene 5 dígitos.', cp);
+    if (!form.querySelector<HTMLInputElement>('[data-spelling]')!.checked)
+      return fail('Confirma que revisaste la ortografía de los nombres.', form.querySelector('[data-spelling]'));
+
+    const lines = cart.lines();
+    if (!lines.length) return;
+    const t = render();
+    const method = form.querySelector<HTMLInputElement>('input[name="shipping"]:checked')?.value || 'estandar';
+    const order = buildOrder(
+      lines,
+      (l) => cart.unit(l),
+      { subtotal: t.subtotal, discount: t.discount, shipping: t.shipping, total: t.total },
+      { email: get('email'), phone: `+52${digits}`, name: get('name') },
+      {
+        postalCode: get('postalCode'),
+        street: get('street'),
+        interior: get('interior') || undefined,
+        colonia: get('colonia'),
+        city: get('city'),
+        state: get('state'),
+        references: get('references') || undefined,
+      },
+      method,
+    );
+    saveOrder(order);
+    track('AddPaymentInfo', { value: order.totals.total, num_items: t.items }, order.id);
+
+    const btn = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    btn.disabled = true;
+
+    if (store.payment.mode === 'endpoint' && store.payment.endpoint) {
+      try {
+        const res = await fetch(store.payment.endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(order),
+        });
+        const data = (await res.json().catch(() => ({}))) as { redirectUrl?: string; error?: string };
+        if (!res.ok || !data.redirectUrl) throw new Error(data.error || 'No pudimos iniciar el pago.');
+        location.href = data.redirectUrl;
+      } catch (err) {
+        btn.disabled = false;
+        fail(`${(err as Error).message} Intenta de nuevo o escríbenos.`);
+      }
+      return;
+    }
+
+    // modo WhatsApp: registra o pedido no webhook (se houver) e segue para a confirmação
+    if (store.payment.orderWebhook) {
+      try {
+        await fetch(store.payment.orderWebhook, { method: 'POST', mode: 'no-cors', body: JSON.stringify(order), keepalive: true });
+      } catch {
+        /* segue mesmo assim; o pedido vai pelo WhatsApp */
+      }
+    }
+    track('Lead', { value: order.totals.total }, order.id);
+    cart.clear();
+    location.href = `/gracias?pedido=${encodeURIComponent(order.id)}`;
+  });
+
+  render();
+  loadPreviewFonts().then(render);
+  cart.onChange(render);
+  const t0 = cart.totals(shippingPrice());
+  if (t0.items) track('InitiateCheckout', { value: t0.total, num_items: t0.items });
+</script>

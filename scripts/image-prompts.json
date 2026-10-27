@@ -1,0 +1,89 @@
+[
+  {
+    "id": "hero-desktop",
+    "aspect_ratio": "16:9",
+    "prompt": "Wide editorial portrait for a fine-jewelry campaign. A Mexican woman in her late twenties with warm tan skin, natural dark brown wavy hair loosely tucked behind one ear, minimal makeup, genuine soft smile, positioned on the right third of the frame, looking slightly down. She wears a cream silk camisole. Around her neck: a delicate 18k gold-plated nameplate necklace — a slim horizontal rectangular bar pendant about 35 mm by 7 mm with softly rounded corners, attached at both ends directly to a fine gold cable chain. The name 'Valeria' is laser-engraved in the center of the bar in an elegant flowing cursive script, spelled exactly V-a-l-e-r-i-a, crisp and legible. Her fingertips lightly touch the chain near the bar. Late-afternoon golden window light from the left, soft warm shadows, plain warm ivory plaster wall background with generous empty space on the left half of the frame. Shot at 85mm f/2.2."
+  },
+  {
+    "id": "hero-mobile",
+    "aspect_ratio": "4:5",
+    "prompt": "Vertical close editorial portrait for a fine-jewelry campaign. A Mexican woman in her late twenties with warm tan skin and natural dark brown hair pulled back, framed from the lips down to the upper chest, head slightly turned, relaxed shoulders, cream silk camisole. She wears a delicate 18k gold-plated nameplate necklace — a slim horizontal rectangular bar pendant about 35 mm by 7 mm with softly rounded corners, attached at both ends directly to a fine gold cable chain, resting just below the collarbones. The name 'Valeria' is laser-engraved in the center of the bar in an elegant flowing cursive script, spelled exactly V-a-l-e-r-i-a, crisp and legible. Golden late-afternoon window light, warm ivory plaster wall background. Shot at 100mm macro f/2.8."
+  },
+  {
+    "id": "placa-oro",
+    "aspect_ratio": "1:1",
+    "prompt": "Top-down still-life product photograph of an 18k gold-plated nameplate necklace laid on natural cream linen fabric with soft folds. The pendant is a slim horizontal rectangular bar about 35 mm by 7 mm with softly rounded corners, attached at both ends directly to a fine gold cable chain that curves gently out of frame. The name 'Camila' is laser-engraved in the center of the bar in an elegant flowing cursive script, spelled exactly C-a-m-i-l-a, crisp and legible. Soft diffused daylight, gentle natural shadow under the chain, the bar centered and sharp. Shot at 100mm macro."
+  },
+  {
+    "id": "placa-plata",
+    "aspect_ratio": "4:5",
+    "prompt": "Editorial portrait crop of a Latino man around 30 with medium brown skin and light stubble, framed from the jaw to mid-chest, wearing a plain heather-grey crew-neck t-shirt. Around his neck: a solid .950 sterling silver nameplate necklace — a horizontal rectangular bar pendant about 40 mm by 8 mm with softly rounded corners on a fine silver curb chain. The name 'Diego' is laser-engraved in the center of the bar in clean bold serif capital letters, spelled exactly D-I-E-G-O, crisp and legible. Cool soft daylight from a window, neutral warm-grey wall background. Shot at 85mm f/2.5."
+  },
+  {
+    "id": "nombre-oro",
+    "aspect_ratio": "4:5",
+    "prompt": "Close editorial photograph of a Mexican woman's neck and collarbones, framed from the chin to the upper chest, warm tan skin, wearing a black ribbed tank top. She wears a classic name necklace: the name itself is cut out of polished 18k gold-plated metal in a flowing connected cursive script, with no background plate, about 30 mm wide, with a tiny ring on each end connecting it to a fine gold cable chain. The cutout name reads exactly 'Mariana' (M-a-r-i-a-n-a), every letter correctly formed and joined. Warm soft side light, blurred warm beige background. Shot at 100mm macro f/2.8."
+  },
+  {
+    "id": "nombre-oro-b",
+    "aspect_ratio": "4:5",
+    "prompt": "Close editorial photograph of a young Mexican woman's neck and collarbones, framed from the chin to the upper chest, warm tan skin, wearing a white ribbed tank top. She wears a classic name necklace: the name itself is cut out of polished 18k gold-plated metal in a flowing connected cursive script, with no background plate, about 30 mm wide, with a tiny ring on each end connecting it to a fine gold cable chain. The cutout name reads exactly 'Regina' (capital R, then e-g-i-n-a), every letter clearly formed and joined, the i has its dot. Soft warm window light, blurred cream background. Shot at 100mm macro f/2.8."
+  },
+  {
+    "id": "nombre-plata",
+    "aspect_ratio": "1:1",
+    "prompt": "Still-life product photograph of a polished silver name necklace resting on a pale warm-grey stone surface. The name itself is cut out of polished silver metal in a flowing connected cursive script with no background plate, about 30 mm wide, with a tiny ring on each end connecting it to a fine silver cable chain arranged in a soft curve. The cutout name reads exactly 'Renata' (R-e-n-a-t-a), every letter correctly formed and joined. Soft diffused daylight, delicate shadow, the name centered and in crisp focus. Shot at 100mm macro."
+  },
+  {
+    "id": "iniciales",
+    "aspect_ratio": "4:5",
+    "prompt": "Close editorial photograph of a young Mexican woman's neck and collarbones, warm tan skin, framed from the chin to the upper chest, wearing an oatmeal knit sweater with a wide neckline. She wears a fine 18k gold-plated cable chain with two separate small initial letter charms hanging side by side at the center: the capital letter 'A' and the capital letter 'M', each about 9 mm tall in a classic elegant serif typeface, polished gold, each hanging from its own tiny jump ring, with a small gap between them. Exactly two letters, A and M, no other letters. Soft morning window light, creamy blurred background. Shot at 100mm macro f/2.8."
+  },
+  {
+    "id": "mascota-perro",
+    "aspect_ratio": "1:1",
+    "prompt": "Macro still-life product photograph of an 18k gold-plated pendant shaped as the flat side-profile silhouette of a sitting dog, about 22 mm tall, polished with softly rounded edges, hanging from a small bail on a fine gold cable chain. The pet's name 'Rocky' is engraved across the dog's body in simple clean capital letters, spelled exactly R-O-C-K-Y. The necklace lies on soft cream linen next to a blurred leather dog collar. Soft diffused daylight. Shot at 100mm macro."
+  },
+  {
+    "id": "mascota-gato",
+    "aspect_ratio": "1:1",
+    "prompt": "Macro still-life product photograph of a polished silver pendant shaped as the flat front-view silhouette of a sitting cat with a curled tail, about 22 mm tall, with softly rounded edges, hanging from a small bail on a fine silver cable chain. The pet's name 'Luna' is engraved across the cat's body in simple clean capital letters, spelled exactly L-U-N-A. The necklace rests on a pale warm-grey stone surface. Soft diffused daylight, delicate shadows. Shot at 100mm macro."
+  },
+  {
+    "id": "mascota-lifestyle",
+    "aspect_ratio": "4:5",
+    "prompt": "Candid lifestyle photograph in a bright Mexican apartment. A young Mexican woman in her twenties with warm skin and dark hair in a low bun sits on a linen sofa hugging her small wire-haired schnauzer dog close to her chest, eyes closed, genuinely happy. She wears a white cotton t-shirt and a fine gold cable chain with a small gold pendant shaped as a sitting dog silhouette resting on her chest; the engraving on it is too small to read. Soft natural window light, warm neutral tones, shallow depth of field. Shot at 50mm f/2."
+  },
+  {
+    "id": "regalo",
+    "aspect_ratio": "4:5",
+    "prompt": "Close-up photograph of a woman's hands with natural short nails opening a small square jewelry box covered in soft ivory velvet, with no logo and no text on the box. Inside, on ivory satin, lies an 18k gold-plated nameplate necklace — a slim horizontal rectangular bar about 35 mm by 7 mm with softly rounded corners on a fine gold cable chain. The name 'Luna' is laser-engraved in the center of the bar in an elegant flowing cursive script, spelled exactly L-u-n-a. Warm Christmas atmosphere suggested only by soft out-of-focus warm string-light bokeh in the background and a sprig of pine on a wooden table. Shot at 100mm macro f/2.8."
+  },
+  {
+    "id": "taller",
+    "aspect_ratio": "4:5",
+    "prompt": "Documentary-style photograph inside a small jewelry workshop in Mexico City. Close-up of a jeweler's hands, slightly weathered, holding a polished 18k gold-plated horizontal bar pendant with tweezers beneath the lens of a compact fiber laser engraving machine. The machine is plain matte black and brushed aluminum with absolutely no labels, no stickers, no warning signs and no printed text of any kind. On the bar, a freshly engraved name 'Camila' in elegant flowing cursive script, spelled exactly C-a-m-i-l-a. Warm task lamp light, wooden workbench with jeweler's tools softly out of focus. Shot at 85mm f/2.8."
+  },
+  {
+    "id": "mama",
+    "aspect_ratio": "4:5",
+    "prompt": "Warm candid lifestyle photograph at home in Mexico. A Mexican mother in her early thirties with warm tan skin and long dark hair holds her three-year-old daughter on her hip; the girl rests her head on her mother's shoulder and touches her mother's necklace. The mother wears a fine 18k gold-plated cable chain with one small initial charm, the capital letter 'S' in a classic serif typeface, about 9 mm tall. Soft late-afternoon light, cream walls and a linen curtain, natural unposed moment. Shot at 50mm f/2."
+  },
+  {
+    "id": "materiales",
+    "aspect_ratio": "16:9",
+    "prompt": "Top-down still-life product photograph on natural cream linen of three identical slim horizontal bar necklaces laid parallel, evenly spaced, each bar about 35 mm by 7 mm with softly rounded corners and completely blank with no engraving: the top one in warm 18k gold plating, the middle one in bright silver plating, the bottom one in solid .950 sterling silver with a slightly softer, whiter satin-bright tone. Each on its own matching fine cable chain. Soft diffused daylight, realistic reflections, gentle shadows. No text anywhere."
+  },
+  {
+    "id": "neck-base",
+    "aspect_ratio": "4:5",
+    "prompt": "Straight-on, perfectly frontal and symmetrical studio photograph of a Mexican woman's neck, collarbones and upper chest, framed from just below the chin to mid-chest, face not visible. Warm tan skin with natural texture, shoulders level and relaxed, head straight. She wears a simple ivory cotton top with a wide square neckline that leaves the collarbones and upper chest bare. She wears one single very fine 18k gold-plated cable chain necklace with no pendant and no charms, hanging symmetrically in a smooth shallow U shape, its lowest point exactly on the vertical center line of the image, about one third of the way down from the top of the frame, resting on bare skin a few centimeters below the collarbone notch. Plain warm beige seamless studio background, soft even diffused front light. Shot at 85mm f/8, everything in focus."
+  },
+  {
+    "id": "neck-base-plata",
+    "aspect_ratio": "match_input_image",
+    "image_input": ["neck-base.jpg"],
+    "raw_prompt": true,
+    "prompt": "Edit this photograph: change only the fine gold chain necklace into a polished sterling silver chain of exactly the same shape, thickness and position. Keep everything else identical: same woman, same skin, same top, same framing, same light, same background. Photorealistic."
+  }
+]

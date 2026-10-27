@@ -1,0 +1,160 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { store, whatsappEnabled } from '../config/store';
+const isEndpoint = store.payment.mode === 'endpoint';
+---
+
+<Base title="Gracias por tu pedido" noindex bare>
+  <section class="ty" data-ty>
+    <div class="wrap ty-in">
+      <div class="seal" aria-hidden="true"><Icon name="check" size={30} /></div>
+      <p class="eyebrow" data-ty-eyebrow>{isEndpoint ? 'Pedido recibido' : 'Pedido apartado'}</p>
+      <h1 data-ty-title>{isEndpoint ? '¡Gracias! Ya estamos en ello' : 'Falta un paso: confírmalo por WhatsApp'}</h1>
+      <p class="lead" data-ty-lead>
+        {
+          isEndpoint
+            ? 'Te enviamos la confirmación a tu correo. Antes de grabar te escribiremos por WhatsApp para revisar la ortografía.'
+            : 'Envíanos tu pedido por WhatsApp para recibir el enlace de pago seguro. En cuanto se confirme, grabamos tu pieza.'
+        }
+      </p>
+      <p class="order-id" data-ty-id hidden></p>
+
+      {
+        !isEndpoint && whatsappEnabled && (
+          <a class="btn btn-gold big" href="#" target="_blank" rel="noopener" data-ty-wa>
+            <Icon name="whatsapp" size={22} /> Enviar mi pedido por WhatsApp
+          </a>
+        )
+      }
+      {
+        !isEndpoint && !whatsappEnabled && (
+          <p class="warn">Configura el número de WhatsApp en src/config/store.ts para activar este paso.</p>
+        )
+      }
+
+      <ol class="next">
+        <li><span>1</span> Confirmamos la ortografía contigo.</li>
+        <li><span>2</span> Grabamos tu pieza en {store.timing.productionDays}.</li>
+        <li><span>3</span> Te enviamos la guía de rastreo. Llega en {store.timing.totalDays}.</li>
+      </ol>
+
+      <a href="/" class="link-arrow">Volver a la tienda <Icon name="arrow" size={16} /></a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ty {
+    padding: 56px 0 96px;
+  }
+  .ty-in {
+    max-width: 640px;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+  .seal {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--gold-grad);
+    color: var(--ink);
+    box-shadow: var(--shadow-1);
+    animation: pop 0.8s var(--ease) both;
+  }
+  @keyframes pop {
+    from {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+  }
+  h1 {
+    font-size: clamp(2.2rem, 6vw, 3.4rem);
+  }
+  .order-id {
+    font-size: 0.85rem;
+    padding: 8px 14px;
+    border-radius: 99px;
+    background: var(--sand);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .big {
+    min-height: 62px;
+    font-size: 1.02rem;
+    margin-top: 6px;
+  }
+  .warn {
+    font-size: 0.85rem;
+    color: var(--danger);
+  }
+  .next {
+    list-style: none;
+    margin: 18px 0 8px;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    text-align: left;
+    width: 100%;
+  }
+  .next li {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+    font-size: 0.92rem;
+  }
+  .next span {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    flex: none;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    color: var(--ivory);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+</style>
+
+<script>
+  import { loadOrder, orderMessage } from '../lib/order';
+  import { cart } from '../lib/cart';
+  import { track } from '../lib/track';
+  import { store, whatsappLink } from '../config/store';
+
+  const q = new URLSearchParams(location.search);
+  const order = loadOrder();
+  const idEl = document.querySelector<HTMLElement>('[data-ty-id]');
+  if (order && idEl) {
+    idEl.textContent = `Pedido ${order.id}`;
+    idEl.hidden = false;
+  }
+  const wa = document.querySelector<HTMLAnchorElement>('[data-ty-wa]');
+  if (wa && order) wa.href = whatsappLink(orderMessage(order));
+
+  // modo gateway: só dispara Purchase quando o gateway confirma a aprovação
+  const { key, value } = store.payment.approvedParam;
+  if (store.payment.mode === 'endpoint' && q.get(key) === value && order) {
+    const flag = `nombra.purchased.${order.id}`;
+    if (!localStorage.getItem(flag)) {
+      track('Purchase', { value: order.totals.total, num_items: order.items.length }, order.id);
+      localStorage.setItem(flag, '1');
+    }
+    cart.clear();
+  }
+  if (store.payment.mode === 'endpoint' && q.get(key) && q.get(key) !== value) {
+    document.querySelector('[data-ty-eyebrow]')!.textContent = 'Pago pendiente';
+    document.querySelector('[data-ty-title]')!.textContent = 'Tu pago aún no se confirma';
+    document.querySelector('[data-ty-lead]')!.textContent =
+      'Si pagaste en OXXO o por transferencia, puede tardar unas horas. Tu bolsa sigue guardada por si quieres intentarlo de nuevo.';
+  }
+</script>

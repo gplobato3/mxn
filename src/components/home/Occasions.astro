@@ -1,0 +1,96 @@
+---
+import Photo from '../Photo.astro';
+const items = [
+  { photo: 'mama', title: 'Para mamá', text: 'Con la inicial de cada hijo', href: '/disena/nombre?estilo=iniciales&nombre=S', alt: 'Mamá cargando a su hija, con un collar de inicial dorada' },
+  { photo: 'placa-plata', title: 'Para él', text: 'Placa en plata .950', href: '/disena/placa?metal=plata950&letra=serif&nombre=Diego', alt: 'Hombre con un collar de placa de plata con el nombre Diego' },
+  { photo: 'mascota-lifestyle', title: 'Para quien te espera en casa', text: 'La silueta de tu mascota', href: '/disena/mascota', alt: 'Mujer abrazando a su perro schnauzer, con un dije dorado de perro' },
+  { photo: 'nombre-oro-b', title: 'Para ti', text: 'Tu nombre, recortado en oro', href: '/disena/nombre?nombre=Regina', alt: 'Collar con el nombre Regina recortado en oro' },
+];
+---
+
+<section class="section occ">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow" data-reveal>Inspiración</p>
+      <h2 data-reveal style="--d:.06s">Un nombre, <em class="italic">mil historias</em></h2>
+    </div>
+    <ul class="mosaic">
+      {
+        items.map((it, i) => (
+          <li data-reveal style={`--d:${0.07 * i}s`}>
+            <a href={it.href}>
+              <Photo name={it.photo} alt={it.alt} sizes="(min-width: 900px) 25vw, 50vw" widths={[360, 540, 720, 960]} />
+              <span class="cap">
+                <strong>{it.title}</strong>
+                <span>{it.text}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .mosaic {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .mosaic a {
+    position: relative;
+    display: block;
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    text-decoration: none;
+    color: #fff;
+  }
+  .mosaic :global(picture) {
+    height: 100%;
+  }
+  .mosaic :global(img) {
+    transition: transform 1.2s var(--ease);
+  }
+  .mosaic a:hover :global(img) {
+    transform: scale(1.05);
+  }
+  .mosaic a::after {
+    content: '';
+    position: absolute;
+    inset: 45% 0 0 0;
+    background: linear-gradient(to bottom, transparent, rgb(20 14 10 / 0.62));
+  }
+  .cap {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    z-index: 1;
+    display: grid;
+    gap: 2px;
+  }
+  .cap strong {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.3rem;
+    line-height: 1.1;
+  }
+  .cap span {
+    font-size: 0.78rem;
+    opacity: 0.9;
+  }
+  @media (min-width: 900px) {
+    .mosaic {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+    .cap strong {
+      font-size: 1.55rem;
+    }
+  }
+</style>

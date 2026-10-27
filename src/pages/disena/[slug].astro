@@ -1,0 +1,961 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Faq from '../../components/Faq.astro';
+import Photo from '../../components/Photo.astro';
+import { products, productList, materials, chainLengths, fonts, animals, type ProductId } from '../../data/catalog';
+import { petShapes } from '../../lib/shapes';
+import { responsive } from '../../lib/images';
+import { money } from '../../lib/format';
+import { store, whatsappEnabled } from '../../config/store';
+
+export function getStaticPaths() {
+  return productList.map((p) => ({ params: { slug: p.slug }, props: { id: p.id } }));
+}
+
+const { id } = Astro.props as { id: ProductId };
+const p = products[id];
+
+const gallery: Record<ProductId, { name: string; alt: string }[]> = {
+  placa: [
+    { name: 'placa-oro', alt: 'Placa dorada con el nombre Camila grabado en caligrafía' },
+    { name: 'hero-mobile', alt: 'Collar de placa dorada con el nombre Valeria puesto' },
+    { name: 'placa-plata', alt: 'Hombre con placa de plata con el nombre Diego' },
+    { name: 'regalo', alt: 'Estuche de regalo con placa grabada Luna' },
+  ],
+  nombre: [
+    { name: 'nombre-oro', alt: 'Collar con el nombre Mariana recortado en oro' },
+    { name: 'iniciales', alt: 'Collar con las iniciales A y M en oro' },
+    { name: 'nombre-plata', alt: 'Collar con el nombre Renata recortado en plata' },
+    { name: 'nombre-oro-b', alt: 'Collar con el nombre Regina recortado en oro' },
+  ],
+  mascota: [
+    { name: 'mascota-perro', alt: 'Dije dorado con silueta de perro y el nombre Rocky' },
+    { name: 'mascota-gato', alt: 'Dije de plata con silueta de gato y el nombre Luna' },
+    { name: 'mascota-lifestyle', alt: 'Mujer abrazando a su perro con un dije de perro dorado' },
+  ],
+};
+
+const neckGold = await responsive('neck-oro', [600, 900, 1200, 1495], 74);
+const neckSilver = await responsive('neck-plata', [600, 900, 1200, 1495], 74);
+const minPrice = materials.oro.price;
+const maxPrice = materials.plata950.price;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: p.name,
+    description: p.description,
+    brand: { '@type': 'Brand', name: store.brand.name },
+    image: [new URL('/og.jpg', Astro.site).href],
+    offers: {
+      '@type': 'AggregateOffer',
+      priceCurrency: 'MXN',
+      lowPrice: minPrice,
+      highPrice: maxPrice,
+      offerCount: 3,
+      availability: 'https://schema.org/InStock',
+    },
+  },
+];
+
+const others = productList.filter((x) => x.id !== id);
+const textLabel = id === 'mascota' ? 'Nombre de tu mascota' : 'Nombre a grabar';
+---
+
+<Base title={p.name} description={`${p.tagline} Desde ${money(minPrice)} MXN. Vista previa en vivo y envío a todo México.`} jsonLd={jsonLd}>
+  <section class="pdp" data-pdp data-product={id}>
+    <div class="wrap pdp-grid">
+      <!-- título (mobile: acima da prévia) -->
+      <header class="pdp-title">
+        <p class="eyebrow">Diseña el tuyo</p>
+        <h1>{p.name}</h1>
+        <p class="price-line">
+          <span class="price" data-price>{money(minPrice)}</span>
+          <span class="muted">MXN · IVA incluido · Envío gratis</span>
+        </p>
+      </header>
+
+      <!-- PRÉVIA -->
+      <div class="stage-col">
+        <div class="stage" data-stage data-view="neck">
+          <div class="frame" data-frame>
+            <div class="neck" data-neck>
+              <picture data-neck-photo="gold">
+                <source type="image/avif" srcset={neckGold.avif} sizes="(min-width: 900px) 50vw, 100vw" />
+                <source type="image/webp" srcset={neckGold.webp} sizes="(min-width: 900px) 50vw, 100vw" />
+                <img srcset={neckGold.fallback} sizes="(min-width: 900px) 50vw, 100vw" width={neckGold.width} height={neckGold.height} alt="" fetchpriority="high" decoding="async" />
+              </picture>
+              <picture data-neck-photo="silver" hidden>
+                <source type="image/avif" srcset={neckSilver.avif} sizes="(min-width: 900px) 50vw, 100vw" />
+                <source type="image/webp" srcset={neckSilver.webp} sizes="(min-width: 900px) 50vw, 100vw" />
+                <img srcset={neckSilver.fallback} sizes="(min-width: 900px) 50vw, 100vw" width={neckSilver.width} height={neckSilver.height} alt="" loading="lazy" decoding="async" />
+              </picture>
+              <div class="neck-svg" data-neck-svg></div>
+            </div>
+
+            <div class="studio" data-studio-svg></div>
+
+            <div class="photos" data-photos>
+              {
+                gallery[id].map((g) => (
+                  <div class="ph">
+                    <Photo name={g.name} alt={g.alt} sizes="(min-width: 900px) 50vw, 100vw" widths={[480, 720, 960, 1280]} />
+                  </div>
+                ))
+              }
+            </div>
+
+            <div class="views" role="tablist" aria-label="Vista">
+              <button type="button" role="tab" aria-selected="true" data-view-btn="neck">Puesto</button>
+              <button type="button" role="tab" aria-selected="false" data-view-btn="studio">Detalle</button>
+              <button type="button" role="tab" aria-selected="false" data-view-btn="photos">Fotos</button>
+            </div>
+            <button type="button" class="zoom" data-zoom aria-label="Alejar la vista">
+              <Icon name="zoom" size={20} />
+            </button>
+            <span class="live" aria-hidden="true"><i></i> Vista previa en vivo</span>
+          </div>
+          <p class="stage-note muted">Vista previa ilustrativa: el tamaño real de la placa es de 35 mm. Te confirmamos el diseño antes de grabar.</p>
+        </div>
+      </div>
+
+      <!-- CONFIGURADOR -->
+      <form class="cfg" data-cfg novalidate>
+        {
+          id === 'nombre' && (
+            <fieldset class="step">
+              <legend class="label">Estilo</legend>
+              <div class="seg" role="radiogroup">
+                <label class="opt">
+                  <input type="radio" name="style" value="nombre" checked />
+                  <span>Nombre recortado</span>
+                </label>
+                <label class="opt">
+                  <input type="radio" name="style" value="iniciales" />
+                  <span>Iniciales sueltas</span>
+                </label>
+              </div>
+            </fieldset>
+          )
+        }
+
+        {
+          id === 'mascota' && (
+            <fieldset class="step">
+              <legend class="label">Silueta</legend>
+              <div class="animals">
+                {Object.values(animals).map((a, i) => {
+                  const s = petShapes[a.id];
+                  return (
+                    <label class="opt animal">
+                      <input type="radio" name="animal" value={a.id} checked={i === 0} />
+                      <span>
+                        <svg viewBox={`${s.box.x - 6} ${s.box.y - 6} ${s.box.w + 12} ${s.box.h + 12}`} aria-hidden="true">
+                          <path d={s.d} />
+                        </svg>
+                        {a.label}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+          )
+        }
+
+        <div class="step field">
+          <label for="txt" data-text-label>{textLabel}</label>
+          <div class="txt-wrap">
+            <input
+              id="txt"
+              name="text"
+              class="input txt"
+              type="text"
+              autocomplete="off"
+              autocapitalize="words"
+              spellcheck="false"
+              enterkeyhint="done"
+              maxlength={p.maxChars}
+              placeholder={p.placeholder}
+              aria-describedby="txt-hint"
+              data-text
+            />
+            <span class="count" data-count>0/{p.maxChars}</span>
+          </div>
+          <p id="txt-hint" class="hint" data-hint>Respetamos acentos y la ñ. Te confirmamos la ortografía antes de grabar.</p>
+          <p class="error-text" data-text-error hidden>Escribe el nombre que quieres grabar.</p>
+        </div>
+
+        <fieldset class="step" data-fonts-step>
+          <legend class="label">Letra</legend>
+          <div class="options fonts">
+            {
+              p.fonts.map((f, i) => (
+                <label class="opt font">
+                  <input type="radio" name="font" value={f} checked={i === 0} />
+                  <span>
+                    <b style={`font-family:${fonts[f].family};${fonts[f].transform === 'uppercase' ? 'text-transform:uppercase;letter-spacing:.12em;font-size:.95rem;' : ''}`} data-font-sample>
+                      {p.defaultText}
+                    </b>
+                    <small>{fonts[f].label}</small>
+                  </span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend class="label">Metal</legend>
+          <div class="metals">
+            {
+              Object.values(materials).map((m, i) => (
+                <label class="opt metal">
+                  <input type="radio" name="material" value={m.id} checked={i === 0} />
+                  <span>
+                    <i class:list={['sw', m.tone]} aria-hidden="true" />
+                    <em>
+                      <strong>{m.label}</strong>
+                      <small>{money(m.price)}</small>
+                    </em>
+                    {m.badge && <b class="badge">{m.badge}</b>}
+                  </span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend class="label">Largo de cadena</legend>
+          <div class="options">
+            {
+              chainLengths.map((c) => (
+                <label class="opt">
+                  <input type="radio" name="length" value={c.cm} checked={c.cm === 45} />
+                  <span>
+                    {c.label}
+                    <small class="muted">{c.hint}</small>
+                  </span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        {
+          (store.addons.giftBox.enabled || store.addons.giftNote.enabled) && (
+            <fieldset class="step extras">
+              <legend class="label">Para regalo</legend>
+              {store.addons.giftBox.enabled && (
+                <label class="check">
+                  <input type="checkbox" name="giftBox" />
+                  <span>
+                    <Icon name="gift" size={18} /> {store.addons.giftBox.label}
+                    <b>+{money(store.addons.giftBox.price)}</b>
+                  </span>
+                </label>
+              )}
+              {store.addons.giftNote.enabled && (
+                <>
+                  <label class="check">
+                    <input type="checkbox" name="wantNote" data-want-note />
+                    <span>
+                      <Icon name="pen" size={18} /> {store.addons.giftNote.label} <b>Gratis</b>
+                    </span>
+                  </label>
+                  <div class="note" data-note hidden>
+                    <label class="sr-only" for="giftNote">Dedicatoria</label>
+                    <textarea id="giftNote" name="giftNote" class="textarea" maxlength={store.addons.giftNote.maxLength} placeholder="Escribe tu mensaje (lo imprimimos en la tarjeta)" />
+                  </div>
+                </>
+              )}
+            </fieldset>
+          )
+        }
+
+        <div class="buy" data-buy>
+          <button type="submit" class="btn btn-block add">
+            <span>Agregar a la bolsa</span>
+            <span class="dot" aria-hidden="true">·</span>
+            <span data-btn-price>{money(minPrice)}</span>
+          </button>
+          {
+            whatsappEnabled && (
+              <button type="button" class="btn btn-ghost btn-block share" data-share>
+                <Icon name="share" size={18} /> Enviar este diseño por WhatsApp
+              </button>
+            )
+          }
+          <ul class="mini-trust">
+            <li><Icon name="truck" size={16} /> Envío gratis · llega en {store.timing.totalDays}</li>
+            <li><Icon name="check" size={16} /> Revisamos la ortografía contigo antes de grabar</li>
+            <li><Icon name="shield" size={16} /> Si llega con defecto, lo reponemos sin costo</li>
+          </ul>
+        </div>
+
+        <div class="details">
+          <details open>
+            <summary>Sobre la pieza</summary>
+            <p>{p.description}</p>
+            <dl>
+              {
+                p.details.map((d) => (
+                  <div>
+                    <dt>{d.label}</dt>
+                    <dd>{d.value}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </details>
+          <details>
+            <summary>Materiales y cuidado</summary>
+            <ul>
+              {Object.values(materials).map((m) => <li><strong>{m.label}:</strong> {m.description}</li>)}
+              <li>Evita perfume directo, cloro y albercas. Guárdalo seco y por separado.</li>
+            </ul>
+          </details>
+          <details>
+            <summary>Envío y cambios</summary>
+            <p>
+              Grabamos en {store.timing.productionDays} y enviamos con guía de rastreo. Por ser una pieza personalizada no hay cambios por gusto, pero si llega con un
+              defecto o un error nuestro la reponemos sin costo. <a href="/envios-y-devoluciones">Ver política</a>.
+            </p>
+          </details>
+        </div>
+      </form>
+    </div>
+
+    <!-- barra fixa mobile -->
+    <div class="sticky-buy" data-sticky hidden>
+      <div class="sb-in">
+        <div class="sb-txt">
+          <strong data-sticky-name>{p.shortName}</strong>
+          <span data-sticky-price>{money(minPrice)}</span>
+        </div>
+        <button type="button" class="btn btn-gold" data-sticky-add>Agregar <Icon name="bag" size={18} /></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section more">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">También te puede gustar</p>
+        <h2>Otros diseños</h2>
+      </div>
+      <div class="more-grid">
+        {
+          others.map((o) => (
+            <a href={`/disena/${o.slug}`} class="more-card">
+              <Photo name={gallery[o.id][0].name} alt={gallery[o.id][0].alt} sizes="(min-width: 900px) 30vw, 50vw" widths={[360, 540, 720]} />
+              <span>
+                <strong>{o.shortName}</strong>
+                <small>Desde {money(minPrice)}</small>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <Faq limit={6} id="faq-producto" />
+</Base>
+
+<style>
+  .pdp {
+    padding: 10px 0 40px;
+  }
+  .pdp-grid {
+    display: grid;
+    gap: 14px;
+  }
+  .pdp-title {
+    display: grid;
+    gap: 6px;
+    padding-top: 6px;
+  }
+  .pdp-title h1 {
+    font-size: clamp(2rem, 6vw, 3rem);
+  }
+  .price-line {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .price {
+    font-size: 1.35rem;
+    font-weight: 700;
+  }
+  .price-line .muted {
+    font-size: 0.8rem;
+  }
+
+  /* ---------- stage ---------- */
+  .stage-col {
+    margin-inline: calc(var(--gutter) * -1);
+  }
+  .frame {
+    position: relative;
+    aspect-ratio: 5 / 4;
+    overflow: hidden;
+    background: #e9dccb;
+    touch-action: pan-y;
+  }
+  .neck {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--w, 100%);
+    aspect-ratio: 1856 / 2304;
+    transform: translate3d(var(--x, 0px), var(--y, 0px), 0);
+    transition: transform 0.7s var(--ease), width 0.7s var(--ease);
+    will-change: transform;
+  }
+  .neck picture,
+  .neck img,
+  .neck-svg,
+  .neck-svg :global(svg) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .neck img {
+    object-fit: cover;
+  }
+  .studio {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(90% 80% at 50% 38%, #fffaf2 0%, #f1e7d9 60%, #e4d6c3 100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s;
+  }
+  .studio :global(svg) {
+    width: 112%;
+    max-width: none;
+  }
+  .photos {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s;
+    background: var(--sand);
+  }
+  .photos::-webkit-scrollbar {
+    display: none;
+  }
+  .ph {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+  }
+  .ph :global(picture) {
+    height: 100%;
+  }
+  .stage[data-view='studio'] .studio,
+  .stage[data-view='photos'] .photos {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .stage[data-view='photos'] .zoom {
+    display: none;
+  }
+  .views {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 99px;
+    background: rgb(255 253 249 / 0.78);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgb(31 25 21 / 0.1);
+  }
+  .views button {
+    border: 0;
+    background: transparent;
+    border-radius: 99px;
+    padding: 8px 13px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .views button[aria-selected='true'] {
+    background: var(--ink);
+    color: var(--ivory);
+  }
+  .zoom {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    width: 42px;
+    height: 42px;
+    border-radius: 99px;
+    border: 0;
+    display: grid;
+    place-items: center;
+    background: rgb(255 253 249 / 0.78);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgb(31 25 21 / 0.1);
+  }
+  .live {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 11px;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    background: rgb(31 25 21 / 0.62);
+    color: #fff;
+    transition: opacity 0.3s;
+  }
+  .live i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #7ed58a;
+    box-shadow: 0 0 0 0 rgb(126 213 138 / 0.7);
+    animation: pulse 2s infinite;
+  }
+  .stage[data-view='photos'] .live {
+    opacity: 0;
+  }
+  @keyframes pulse {
+    70% {
+      box-shadow: 0 0 0 8px rgb(126 213 138 / 0);
+    }
+  }
+  .stage-note {
+    font-size: 0.72rem;
+    padding: 8px var(--gutter) 0;
+  }
+
+  /* ---------- configurador ---------- */
+  .cfg {
+    display: grid;
+    gap: 22px;
+    padding-top: 6px;
+  }
+  .step {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+  }
+  .step legend {
+    margin-bottom: 10px;
+    padding: 0;
+  }
+  .seg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .seg .opt span {
+    width: 100%;
+    justify-content: center;
+  }
+  .txt-wrap {
+    position: relative;
+  }
+  .txt {
+    font-family: var(--serif);
+    font-size: 1.45rem !important;
+    padding-right: 64px;
+    min-height: 60px;
+  }
+  .txt::placeholder {
+    font-family: var(--sans);
+    font-size: 1rem;
+    color: #9a8d80;
+  }
+  .count {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .fonts .opt span {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    border-radius: 14px;
+    padding: 10px 16px;
+    min-width: 108px;
+  }
+  .fonts b {
+    font-weight: 400;
+    font-size: 1.4rem;
+    line-height: 1.1;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fonts small,
+  .options small {
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .options .opt span {
+    flex-direction: column;
+    gap: 0;
+    border-radius: 14px;
+    min-width: 96px;
+    line-height: 1.25;
+    padding: 10px 14px;
+  }
+  .animals {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .animal span {
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    border-radius: 14px;
+    padding: 12px 6px 10px;
+    font-size: 0.8rem;
+  }
+  .animal svg {
+    width: 34px;
+    height: 34px;
+    fill: #b08a4e;
+  }
+  .metals {
+    display: grid;
+    gap: 8px;
+  }
+  .metal span {
+    width: 100%;
+    border-radius: 14px;
+    gap: 12px;
+    padding: 12px 14px;
+    justify-content: flex-start;
+  }
+  .metal em {
+    font-style: normal;
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .metal small {
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .sw {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    flex: none;
+    box-shadow: inset 0 -2px 4px rgb(0 0 0 / 0.15), inset 0 2px 4px rgb(255 255 255 / 0.6);
+  }
+  .sw.gold {
+    background: linear-gradient(135deg, #f6e3ae, #c9a05a 55%, #8e6a2e);
+  }
+  .sw.silver {
+    background: linear-gradient(135deg, #ffffff, #c9cdd2 55%, #8b9096);
+  }
+  .sw.silver950 {
+    background: linear-gradient(135deg, #fffef9, #d8d7cf 55%, #94938c);
+  }
+  .badge {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 99px;
+    background: var(--gold-soft);
+    color: var(--ink-2);
+  }
+  .extras {
+    gap: 8px;
+  }
+  .check {
+    position: relative;
+    display: block;
+  }
+  .check input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .check span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px 14px 46px;
+    border-radius: 14px;
+    border: 1px solid var(--line-2);
+    background: var(--paper);
+    font-size: 0.92rem;
+    position: relative;
+    pointer-events: none;
+  }
+  .check span::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--line-2);
+    background: #fff;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .check input:checked + span {
+    border-color: var(--ink);
+  }
+  .check input:checked + span::before {
+    background: var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpath d='m5 12.5 4.2 4.2L19 7'/%3E%3C/svg%3E") center/12px no-repeat;
+    border-color: var(--ink);
+  }
+  .check input:focus-visible + span {
+    outline: 2px solid var(--gold-deep);
+    outline-offset: 2px;
+  }
+  .check b {
+    margin-left: auto;
+    font-weight: 600;
+  }
+  .buy {
+    display: grid;
+    gap: 10px;
+    padding-top: 4px;
+  }
+  .add {
+    min-height: 60px;
+    font-size: 1rem;
+  }
+  .add .dot {
+    opacity: 0.5;
+  }
+  .mini-trust {
+    list-style: none;
+    padding: 6px 0 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--ink-2);
+  }
+  .mini-trust li {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .mini-trust :global(svg) {
+    color: var(--gold-deep);
+    flex: none;
+  }
+  .details {
+    border-top: 1px solid var(--line-2);
+  }
+  .details details {
+    border-bottom: 1px solid var(--line-2);
+  }
+  .details summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 0;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+  }
+  .details summary::-webkit-details-marker {
+    display: none;
+  }
+  .details summary::after {
+    content: '+';
+    font-weight: 400;
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+  .details details[open] summary::after {
+    content: '−';
+  }
+  .details p,
+  .details ul,
+  .details dl {
+    font-size: 0.92rem;
+    color: var(--ink-2);
+    margin: 0 0 16px;
+  }
+  .details ul {
+    padding-left: 18px;
+    display: grid;
+    gap: 6px;
+  }
+  .details dl {
+    display: grid;
+    gap: 6px;
+  }
+  .details dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    border-top: 1px dashed var(--line);
+    padding-top: 6px;
+  }
+  .details dt {
+    color: var(--muted);
+  }
+  .details dd {
+    margin: 0;
+    text-align: right;
+  }
+
+  .sticky-buy {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 35;
+    padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom));
+    background: rgb(255 253 249 / 0.94);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid var(--line);
+    transform: translateY(110%);
+    transition: transform 0.45s var(--ease);
+  }
+  .sticky-buy.show {
+    transform: none;
+  }
+  .sb-in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .sb-txt {
+    display: grid;
+    line-height: 1.2;
+    min-width: 0;
+  }
+  .sb-txt strong {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sb-txt span {
+    font-weight: 700;
+    font-size: 0.92rem;
+  }
+
+  .more {
+    background: var(--paper);
+    border-top: 1px solid var(--line);
+  }
+  .more-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .more-card {
+    display: grid;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .more-card :global(picture) {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .more-card span {
+    display: grid;
+  }
+  .more-card strong {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.35rem;
+  }
+  .more-card small {
+    color: var(--muted);
+  }
+
+  @media (min-width: 900px) {
+    .pdp {
+      padding-top: 28px;
+    }
+    .pdp-grid {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      grid-template-areas: 'stage title' 'stage cfg';
+      grid-template-rows: auto 1fr;
+      column-gap: 56px;
+      row-gap: 18px;
+      align-items: start;
+    }
+    .pdp-title {
+      grid-area: title;
+    }
+    .stage-col {
+      grid-area: stage;
+      margin: 0;
+      position: sticky;
+      top: calc(var(--header-h) + 20px);
+    }
+    .frame {
+      aspect-ratio: 4 / 5;
+      max-height: calc(100svh - var(--header-h) - 70px);
+      border-radius: var(--radius);
+      width: 100%;
+    }
+    .stage-note {
+      padding-inline: 0;
+    }
+    .cfg {
+      grid-area: cfg;
+    }
+    .metals {
+      grid-template-columns: 1fr;
+    }
+    .sticky-buy {
+      display: none;
+    }
+    .more-grid {
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 820px;
+      gap: 22px;
+    }
+  }
+</style>
+
+<script>
+  import { initConfigurator } from '../../scripts/configurator';
+  initConfigurator();
+</script>

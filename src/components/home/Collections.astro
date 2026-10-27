@@ -1,0 +1,154 @@
+---
+import Photo from '../Photo.astro';
+import Icon from '../Icon.astro';
+import { materials } from '../../data/catalog';
+import { money } from '../../lib/format';
+
+const cards = [
+  {
+    slug: 'placa',
+    title: 'Placa con nombre',
+    text: 'Una placa pulida con su nombre grabado. Elegante, discreta, para siempre.',
+    photo: 'placa-oro',
+    alt: 'Collar de placa dorada con el nombre Camila grabado en caligrafía',
+  },
+  {
+    slug: 'nombre',
+    title: 'Nombre o iniciales',
+    text: 'Las letras sin placa: su nombre recortado o sus iniciales sueltas.',
+    photo: 'nombre-oro',
+    alt: 'Collar con el nombre Mariana recortado en oro sobre el cuello',
+  },
+  {
+    slug: 'mascota',
+    title: 'Mascota',
+    text: 'La silueta de tu perro o tu gato, con su nombre grabado.',
+    photo: 'mascota-perro',
+    alt: 'Dije dorado con silueta de perro y el nombre Rocky grabado',
+  },
+];
+---
+
+<section class="section collections" id="disenos">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow" data-reveal>Tres diseños, un solo nombre</p>
+      <h2 data-reveal style="--d:.06s">Elige cómo quieres <em class="italic">llevarlo</em></h2>
+    </div>
+
+    <ul class="grid">
+      {
+        cards.map((c, i) => (
+          <li data-reveal style={`--d:${0.08 * i}s`}>
+            <a href={`/disena/${c.slug}`} class="card-p">
+              <div class="media">
+                <Photo name={c.photo} alt={c.alt} sizes="(min-width: 900px) 33vw, 86vw" widths={[480, 720, 960]} />
+              </div>
+              <div class="body">
+                <div>
+                  <h3>{c.title}</h3>
+                  <p class="muted">{c.text}</p>
+                </div>
+                <div class="row">
+                  <span class="price">Desde {money(materials.oro.price)}</span>
+                  <span class="go">
+                    Diseñar <Icon name="arrow" size={16} />
+                  </span>
+                </div>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 82%;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    scrollbar-width: none;
+    padding-bottom: 6px;
+  }
+  .grid::-webkit-scrollbar {
+    display: none;
+  }
+  .grid li {
+    scroll-snap-align: start;
+  }
+  .card-p {
+    display: grid;
+    text-decoration: none;
+    background: var(--paper);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    height: 100%;
+    transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  }
+  .media {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+  }
+  .media :global(img) {
+    transition: transform 1.2s var(--ease);
+  }
+  .card-p:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-2);
+  }
+  .card-p:hover .media :global(img) {
+    transform: scale(1.04);
+  }
+  .body {
+    padding: 18px 18px 20px;
+    display: grid;
+    gap: 16px;
+  }
+  .body h3 {
+    margin-bottom: 6px;
+  }
+  .body p {
+    font-size: 0.92rem;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .price {
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+  .go {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 0.86rem;
+    font-weight: 600;
+    padding: 9px 14px;
+    border-radius: 99px;
+    background: var(--ink);
+    color: var(--ivory);
+  }
+  @media (min-width: 900px) {
+    .grid {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(3, 1fr);
+      overflow: visible;
+      margin: 0;
+      padding: 0;
+      gap: 22px;
+    }
+  }
+</style>

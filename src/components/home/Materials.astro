@@ -1,0 +1,142 @@
+---
+import Photo from '../Photo.astro';
+import { materials } from '../../data/catalog';
+import { money } from '../../lib/format';
+const list = [materials.oro, materials.plata, materials.plata950];
+---
+
+<section class="section mats" id="materiales">
+  <div class="wrap">
+    <div class="head">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Materiales</p>
+        <h2 data-reveal style="--d:.06s">Oro, plata o <em class="italic">plata de ley</em></h2>
+        <p class="lead" data-reveal style="--d:.12s">Mismo diseño, tres acabados. Elige el que va con su estilo y con el momento.</p>
+      </div>
+      <div class="media" data-reveal>
+        <Photo name="materiales" alt="Tres placas lisas: baño de oro 18k, baño de plata y plata .950" sizes="(min-width: 900px) 55vw, 100vw" widths={[640, 960, 1280, 1600]} />
+      </div>
+    </div>
+
+    <ul class="cards">
+      {
+        list.map((m, i) => (
+          <li data-reveal style={`--d:${0.08 * i}s`} class:list={[{ hl: m.id === 'plata950' }]}>
+            <span class:list={['sw', m.tone]} aria-hidden="true" />
+            <div>
+              <div class="t">
+                <h3>{m.label}</h3>
+                {m.badge && <span class="pill">{m.badge}</span>}
+              </div>
+              <p class="muted">{m.description}</p>
+            </div>
+            <p class="p">{money(m.price)} <small>MXN</small></p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    gap: 26px;
+    margin-bottom: 26px;
+  }
+  .head .section-head {
+    margin: 0;
+  }
+  .media {
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+  }
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+  .cards li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 18px;
+    border-radius: var(--radius);
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+  .cards li.hl {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px rgb(176 138 78 / 0.25), var(--shadow-1);
+  }
+  .sw {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    box-shadow: inset 0 -3px 6px rgb(0 0 0 / 0.15), inset 0 3px 6px rgb(255 255 255 / 0.6);
+  }
+  .sw.gold {
+    background: linear-gradient(135deg, #f6e3ae, #c9a05a 55%, #8e6a2e);
+  }
+  .sw.silver {
+    background: linear-gradient(135deg, #ffffff, #c9cdd2 55%, #8b9096);
+  }
+  .sw.silver950 {
+    background: linear-gradient(135deg, #fffef9, #d8d7cf 55%, #94938c);
+  }
+  .t {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .t h3 {
+    font-size: 1.35rem;
+  }
+  .cards p.muted {
+    font-size: 0.88rem;
+  }
+  .p {
+    font-weight: 700;
+    font-size: 1.05rem;
+    white-space: nowrap;
+  }
+  .p small {
+    font-weight: 500;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+  @media (max-width: 520px) {
+    .cards li {
+      grid-template-columns: auto 1fr;
+    }
+    .p {
+      grid-column: 2;
+    }
+  }
+  @media (min-width: 900px) {
+    .head {
+      grid-template-columns: 0.9fr 1.1fr;
+      align-items: center;
+      gap: 56px;
+      margin-bottom: 40px;
+    }
+    .cards {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .cards li {
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      padding: 26px;
+    }
+    .p {
+      grid-column: 2;
+    }
+  }
+</style>

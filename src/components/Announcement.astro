@@ -1,0 +1,44 @@
+---
+import { store } from '../config/store';
+const data = JSON.stringify(store.seasonal);
+---
+
+<div class="announce" role="note">
+  <p data-announce data-msgs={data}>{store.defaultAnnouncement}</p>
+</div>
+
+<script is:inline>
+  (function () {
+    var el = document.querySelector('[data-announce]');
+    if (!el) return;
+    try {
+      var msgs = JSON.parse(el.getAttribute('data-msgs') || '[]');
+      var now = Date.now();
+      for (var i = 0; i < msgs.length; i++) {
+        // horário do centro do México (UTC-6)
+        var from = Date.parse(msgs[i].from + 'T00:00:00-06:00');
+        var until = Date.parse(msgs[i].until + 'T23:59:59-06:00');
+        if (now >= from && now <= until) {
+          el.textContent = msgs[i].text;
+          break;
+        }
+      }
+    } catch (e) {}
+  })();
+</script>
+
+<style>
+  .announce {
+    background: var(--ink);
+    color: #f3e8d6;
+    text-align: center;
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+    padding: 9px var(--gutter);
+  }
+  .announce p {
+    max-width: var(--max);
+    margin-inline: auto;
+  }
+</style>

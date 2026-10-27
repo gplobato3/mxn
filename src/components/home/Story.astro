@@ -1,0 +1,116 @@
+---
+import Photo from '../Photo.astro';
+import Icon from '../Icon.astro';
+import { store } from '../../config/store';
+---
+
+<!-- Regalo -->
+<section class="band gift">
+  <div class="wrap band-grid">
+    <div class="media" data-reveal>
+      <Photo name="regalo" alt="Manos abriendo un estuche con un collar de placa grabado con el nombre Luna" sizes="(min-width: 900px) 45vw, 100vw" widths={[480, 720, 960, 1280]} />
+    </div>
+    <div class="copy">
+      <p class="eyebrow" data-reveal>El regalo que no se repite</p>
+      <h2 data-reveal style="--d:.06s">Nadie más tendrá <em class="italic">uno igual</em></h2>
+      <p class="lead" data-reveal style="--d:.12s">
+        Para mamá con el nombre de sus hijos, para tu pareja con sus iniciales, para ti con el nombre de quien te espera en casa.
+      </p>
+      <ul class="ticks" data-reveal style="--d:.18s">
+        {store.addons.giftBox.enabled && <li><Icon name="gift" size={18} /> {store.addons.giftBox.label} por ${store.addons.giftBox.price}</li>}
+        {store.addons.giftNote.enabled && <li><Icon name="pen" size={18} /> Tarjeta con dedicatoria sin costo</li>}
+        <li><Icon name="truck" size={18} /> Envío a todo México con guía de rastreo</li>
+      </ul>
+      <a href="/disena/placa" class="btn" data-reveal style="--d:.24s">Diseñar un regalo <Icon name="arrow" size={18} /></a>
+    </div>
+  </div>
+</section>
+
+<!-- Taller -->
+<section class="band craft">
+  <div class="wrap band-grid rev">
+    <div class="media" data-reveal>
+      <Photo name="taller" alt="Joyero sosteniendo una placa dorada recién grabada con el nombre Camila" sizes="(min-width: 900px) 45vw, 100vw" widths={[480, 720, 960, 1280]} />
+    </div>
+    <div class="copy">
+      <p class="eyebrow" data-reveal>{store.brand.madeIn}</p>
+      <h2 data-reveal style="--d:.06s">Pieza por pieza, <em class="italic">con su nombre</em></h2>
+      <p class="lead" data-reveal style="--d:.12s">
+        No tenemos piezas en serie esperando en una bodega. Cada collar se graba cuando lo pides, se revisa a mano y se pule antes de salir.
+      </p>
+      <dl class="facts" data-reveal style="--d:.18s">
+        <div><dt>{store.timing.productionDays}</dt><dd>para grabar tu pieza</dd></div>
+        <div><dt>100%</dt><dd>revisada antes de enviar</dd></div>
+        <div><dt>1 a 1</dt><dd>confirmación por WhatsApp</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .band {
+    padding-block: clamp(64px, 9vw, 120px);
+  }
+  .gift {
+    background: var(--sand);
+  }
+  .band-grid {
+    display: grid;
+    gap: 30px;
+    align-items: center;
+  }
+  .media {
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    max-height: 640px;
+  }
+  .copy {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+  }
+  .ticks {
+    list-style: none;
+    margin: 4px 0 6px;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    font-size: 0.95rem;
+  }
+  .ticks li {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 6px 0 0;
+    width: 100%;
+  }
+  .facts div {
+    border-top: 1px solid var(--line-2);
+    padding-top: 12px;
+  }
+  .facts dt {
+    font-family: var(--serif);
+    font-size: 1.45rem;
+    line-height: 1.1;
+  }
+  .facts dd {
+    margin: 4px 0 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  @media (min-width: 900px) {
+    .band-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+    }
+    .band-grid.rev .media {
+      order: 2;
+    }
+  }
+</style>
