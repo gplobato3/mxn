@@ -1,4 +1,5 @@
 ---
+import { u } from '../../lib/url';
 import Photo from '../Photo.astro';
 import Icon from '../Icon.astro';
 import { store } from '../../config/store';
@@ -21,7 +22,7 @@ import { store } from '../../config/store';
         {store.addons.giftNote.enabled && <li><Icon name="pen" size={18} /> Tarjeta con dedicatoria sin costo</li>}
         <li><Icon name="truck" size={18} /> Envío a todo México con guía de rastreo</li>
       </ul>
-      <a href="/disena/placa" class="btn" data-reveal style="--d:.24s">Diseñar un regalo <Icon name="arrow" size={18} /></a>
+      <a href={u("/disena/placa")} class="btn" data-reveal style="--d:.24s">Diseñar un regalo <Icon name="arrow" size={18} /></a>
     </div>
   </div>
 </section>

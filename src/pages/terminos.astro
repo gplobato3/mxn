@@ -1,4 +1,5 @@
 ---
+import { u } from '../lib/url';
 import Legal from '../layouts/Legal.astro';
 import { store } from '../config/store';
 const b = store.brand;
@@ -26,7 +27,7 @@ const b = store.brand;
 
   <h2>Producción, envío y garantía</h2>
   <p>
-    Los tiempos de producción y entrega, así como las condiciones de cambios y garantía, se describen en la página de <a href="/envios-y-devoluciones">envíos, cambios y garantía</a>.
+    Los tiempos de producción y entrega, así como las condiciones de cambios y garantía, se describen en la página de <a href={u("/envios-y-devoluciones")}>envíos, cambios y garantía</a>.
   </p>
 
   <h2>Atención y quejas</h2>

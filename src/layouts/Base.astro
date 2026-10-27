@@ -1,4 +1,5 @@
 ---
+import { u } from '../lib/url';
 import '../styles/global.css';
 import Announcement from '../components/Announcement.astro';
 import Header from '../components/Header.astro';
@@ -18,14 +19,17 @@ interface Props {
 const {
   title,
   description = 'Collares personalizados con nombre, iniciales o la silueta de tu mascota. Baño de oro 18k o plata .950. Mira cómo queda antes de pagar y recíbelo en todo México.',
-  image = '/og.jpg',
+  image = u('/og.jpg'),
   noindex = false,
   jsonLd = [],
   bare = false,
 } = Astro.props;
 
 const fullTitle = title ? `${title} | ${store.brand.name}` : `${store.brand.name} · Collares con nombre grabado en oro y plata`;
-const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site).href;
+const cleanPath = Astro.url.pathname.replace(/index\.html$/, '').replace(/\.html$/, '').replace(/\/$/, '');
+const canonical = new URL(cleanPath || '/', Astro.site).href;
+// PUBLIC_NOINDEX=1 em versões de teste (ex.: GitHub Pages) para não aparecer no Google
+const hideFromSearch = noindex || import.meta.env.PUBLIC_NOINDEX === '1';
 const ogImage = new URL(image, Astro.site).href;
 const { metaPixelId, tiktokPixelId } = store.analytics;
 
@@ -34,7 +38,7 @@ const org = {
   '@type': 'Organization',
   name: store.brand.name,
   url: Astro.site?.href,
-  logo: new URL('/brand/logo-full.svg', Astro.site).href,
+  logo: new URL(u('/brand/logo-full.svg'), Astro.site).href,
   sameAs: [store.brand.instagram, store.brand.tiktok],
 };
 ---
@@ -47,12 +51,12 @@ const org = {
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex" />}
+    {hideFromSearch && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content="#f8f4ee" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preload" href="/fonts/cormorant-garamond-var.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/manrope-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href={u("/favicon.svg")} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={u("/apple-touch-icon.png")} />
+    <link rel="preload" href={u("/fonts/cormorant-garamond-var.woff2")} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={u("/fonts/manrope-var.woff2")} as="font" type="font/woff2" crossorigin />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_MX" />

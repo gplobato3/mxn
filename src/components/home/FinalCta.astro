@@ -1,4 +1,5 @@
 ---
+import { u } from '../../lib/url';
 import Icon from '../Icon.astro';
 import { productList } from '../../data/catalog';
 ---
@@ -10,7 +11,7 @@ import { productList } from '../../data/catalog';
     <div class="ctas" data-reveal style="--d:.12s">
       {
         productList.map((p, i) => (
-          <a href={`/disena/${p.slug}`} class:list={['btn', i === 0 ? 'btn-gold' : 'btn-ghost light']}>
+          <a href={u(`/disena/${p.slug}`)} class:list={['btn', i === 0 ? 'btn-gold' : 'btn-ghost light']}>
             {p.shortName} {i === 0 && <Icon name="arrow" size={18} />}
           </a>
         ))

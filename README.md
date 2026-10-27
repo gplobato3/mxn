@@ -70,6 +70,19 @@ Preencha `PUBLIC_META_PIXEL_ID` e/ou `PUBLIC_TIKTOK_PIXEL_ID` no `.env`. Eventos
 `Lead` (pedido por WhatsApp) e `Purchase` (só com pagamento aprovado). Para a API de Conversões
 (CAPI), envie o mesmo `eventID` (= id do pedido) a partir do seu endpoint.
 
+## Prévia online (GitHub Pages)
+
+Versão de teste em https://gplobato3.github.io/mxn/ (marcada como `noindex`). Ela é servida a
+partir da branch `gh-pages`. Para atualizar:
+
+```bash
+BASE_PATH=/mxn SITE_URL=https://gplobato3.github.io PUBLIC_NOINDEX=1 npm run build
+touch dist/.nojekyll   # sem isso o GitHub ignora a pasta _astro
+# publique o conteúdo de dist/ na branch gh-pages
+```
+
+No domínio definitivo, faça o build sem `BASE_PATH` e sem `PUBLIC_NOINDEX`.
+
 ## Deploy
 
 Qualquer hospedagem estática: Vercel, Netlify ou Cloudflare Pages.

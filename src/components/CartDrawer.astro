@@ -1,4 +1,5 @@
 ---
+import { u } from '../lib/url';
 import Icon from './Icon.astro';
 import { productList } from '../data/catalog';
 import { store } from '../config/store';
@@ -32,7 +33,7 @@ import { store } from '../config/store';
         <div class="empty-links">
           {
             productList.map((p) => (
-              <a class="btn btn-ghost btn-sm" href={`/disena/${p.slug}`}>
+              <a class="btn btn-ghost btn-sm" href={u(`/disena/${p.slug}`)}>
                 {p.shortName}
               </a>
             ))
@@ -45,7 +46,7 @@ import { store } from '../config/store';
         <div class="upsell-row">
           {
             productList.map((p) => (
-              <a href={`/disena/${p.slug}`} data-upsell={p.id}>
+              <a href={u(`/disena/${p.slug}`)} data-upsell={p.id}>
                 <span>{p.shortName}</span>
                 <Icon name="arrow" size={16} />
               </a>
@@ -62,7 +63,7 @@ import { store } from '../config/store';
         <div><dt>Envío</dt><dd data-sum-ship>Gratis</dd></div>
         <div class="total"><dt>Total</dt><dd data-sum-total></dd></div>
       </dl>
-      <a href="/checkout" class="btn btn-block" data-go-checkout>
+      <a href={u("/checkout")} class="btn btn-block" data-go-checkout>
         <Icon name="lock" size={18} /> Finalizar compra
       </a>
       <p class="foot-note">

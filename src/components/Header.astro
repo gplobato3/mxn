@@ -1,4 +1,5 @@
 ---
+import { u } from '../lib/url';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import { productList } from '../data/catalog';
@@ -11,11 +12,11 @@ const { minimal = false } = Astro.props as { minimal?: boolean };
   minimal ? (
     <header class="hdr hdr-min">
       <div class="hdr-in wrap">
-        <a href="/" class="back" aria-label="Volver a la tienda">
+        <a href={u("/")} class="back" aria-label="Volver a la tienda">
           <Icon name="arrow" size={18} class="flip" />
           <span>Tienda</span>
         </a>
-        <a href="/" class="brand" aria-label={`${store.brand.name}, inicio`}>
+        <a href={u("/")} class="brand" aria-label={`${store.brand.name}, inicio`}>
           <Logo height={16} />
         </a>
         <span class="secure">
@@ -34,19 +35,19 @@ const { minimal = false } = Astro.props as { minimal?: boolean };
     <nav class="nav-desk" aria-label="Diseños">
       {
         productList.map((p) => (
-          <a href={`/disena/${p.slug}`} aria-current={path.endsWith(`/disena/${p.slug}`) ? 'page' : undefined}>
+          <a href={u(`/disena/${p.slug}`)} aria-current={path.endsWith(`/disena/${p.slug}`) ? 'page' : undefined}>
             {p.shortName}
           </a>
         ))
       }
     </nav>
 
-    <a href="/" class="brand" aria-label={`${store.brand.name}, inicio`}>
+    <a href={u("/")} class="brand" aria-label={`${store.brand.name}, inicio`}>
       <Logo height={17} />
     </a>
 
     <div class="hdr-right">
-      <a href="/#preguntas" class="nav-help">Ayuda</a>
+      <a href={u("/#preguntas")} class="nav-help">Ayuda</a>
       <button class="icon-btn bag-btn" type="button" aria-label="Abrir bolsa" data-cart-open>
         <Icon name="bag" size={22} />
         <span class="bag-count" data-cart-count hidden>0</span>
@@ -71,7 +72,7 @@ const { minimal = false } = Astro.props as { minimal?: boolean };
       {
         productList.map((p) => (
           <li>
-            <a href={`/disena/${p.slug}`}>
+            <a href={u(`/disena/${p.slug}`)}>
               <span>{p.shortName}</span>
               <Icon name="chevron" size={18} />
             </a>
@@ -81,9 +82,9 @@ const { minimal = false } = Astro.props as { minimal?: boolean };
     </ul>
     <hr class="divider" />
     <ul class="menu-list small">
-      <li><a href="/#materiales">Materiales</a></li>
-      <li><a href="/#preguntas">Preguntas frecuentes</a></li>
-      <li><a href="/envios-y-devoluciones">Envíos y cambios</a></li>
+      <li><a href={u("/#materiales")}>Materiales</a></li>
+      <li><a href={u("/#preguntas")}>Preguntas frecuentes</a></li>
+      <li><a href={u("/envios-y-devoluciones")}>Envíos y cambios</a></li>
       {
         whatsappEnabled && (
           <li>

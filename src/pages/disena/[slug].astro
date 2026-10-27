@@ -1,4 +1,5 @@
 ---
+import { u } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import Faq from '../../components/Faq.astro';
@@ -48,7 +49,7 @@ const jsonLd = [
     name: p.name,
     description: p.description,
     brand: { '@type': 'Brand', name: store.brand.name },
-    image: [new URL('/og.jpg', Astro.site).href],
+    image: [new URL(u('/og.jpg'), Astro.site).href],
     offers: {
       '@type': 'AggregateOffer',
       priceCurrency: 'MXN',
@@ -322,7 +323,7 @@ const textLabel = id === 'mascota' ? 'Nombre de tu mascota' : 'Nombre a grabar';
             <summary>Envío y cambios</summary>
             <p>
               Grabamos en {store.timing.productionDays} y enviamos con guía de rastreo. Por ser una pieza personalizada no hay cambios por gusto, pero si llega con un
-              defecto o un error nuestro la reponemos sin costo. <a href="/envios-y-devoluciones">Ver política</a>.
+              defecto o un error nuestro la reponemos sin costo. <a href={u("/envios-y-devoluciones")}>Ver política</a>.
             </p>
           </details>
         </div>
@@ -350,7 +351,7 @@ const textLabel = id === 'mascota' ? 'Nombre de tu mascota' : 'Nombre a grabar';
       <div class="more-grid">
         {
           others.map((o) => (
-            <a href={`/disena/${o.slug}`} class="more-card">
+            <a href={u(`/disena/${o.slug}`)} class="more-card">
               <Photo name={gallery[o.id][0].name} alt={gallery[o.id][0].alt} sizes="(min-width: 900px) 30vw, 50vw" widths={[360, 540, 720]} />
               <span>
                 <strong>{o.shortName}</strong>

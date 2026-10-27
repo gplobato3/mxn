@@ -1,4 +1,5 @@
 ---
+import { u } from '../../lib/url';
 import Photo from '../Photo.astro';
 import Icon from '../Icon.astro';
 import { materials } from '../../data/catalog';
@@ -40,7 +41,7 @@ const cards = [
       {
         cards.map((c, i) => (
           <li data-reveal style={`--d:${0.08 * i}s`}>
-            <a href={`/disena/${c.slug}`} class="card-p">
+            <a href={u(`/disena/${c.slug}`)} class="card-p">
               <div class="media">
                 <Photo name={c.photo} alt={c.alt} sizes="(min-width: 900px) 33vw, 86vw" widths={[480, 720, 960]} />
               </div>

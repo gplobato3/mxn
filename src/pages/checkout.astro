@@ -1,4 +1,5 @@
 ---
+import { u } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import { mxStates } from '../data/mx-states';
@@ -32,7 +33,7 @@ const isEndpoint = store.payment.mode === 'endpoint';
       <form class="co-form" data-form novalidate>
         <div class="empty card" data-empty hidden>
           <p class="display-sm">Tu bolsa está vacía</p>
-          <a href="/" class="btn">Volver a la tienda</a>
+          <a href={u("/")} class="btn">Volver a la tienda</a>
         </div>
 
         <fieldset class="block">
@@ -139,7 +140,7 @@ const isEndpoint = store.payment.mode === 'endpoint';
             <span data-btn-total></span>
           </button>
           <p class="legal">
-            Al continuar aceptas los <a href="/terminos" target="_blank">Términos</a> y el <a href="/privacidad" target="_blank">Aviso de privacidad</a>.
+            Al continuar aceptas los <a href={u("/terminos")} target="_blank">Términos</a> y el <a href={u("/privacidad")} target="_blank">Aviso de privacidad</a>.
           </p>
         </fieldset>
       </form>
@@ -480,6 +481,7 @@ const isEndpoint = store.payment.mode === 'endpoint';
   import { buildOrder, saveOrder } from '../lib/order';
   import { matchState } from '../data/mx-states';
   import { store } from '../config/store';
+  import { u } from '../lib/url';
 
   const root = document.querySelector<HTMLElement>('[data-co]')!;
   const form = root.querySelector<HTMLFormElement>('[data-form]')!;
@@ -646,7 +648,7 @@ const isEndpoint = store.payment.mode === 'endpoint';
     }
     track('Lead', { value: order.totals.total }, order.id);
     cart.clear();
-    location.href = `/gracias?pedido=${encodeURIComponent(order.id)}`;
+    location.href = u(`/gracias?pedido=${encodeURIComponent(order.id)}`);
   });
 
   render();

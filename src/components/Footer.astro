@@ -1,4 +1,5 @@
 ---
+import { u } from '../lib/url';
 import Logo from './Logo.astro';
 import { productList } from '../data/catalog';
 import { store, whatsappEnabled, whatsappLink } from '../config/store';
@@ -15,17 +16,17 @@ const year = new Date().getFullYear();
     <nav aria-label="Diseños">
       <p class="ftr-h">Diseños</p>
       <ul>
-        {productList.map((p) => <li><a href={`/disena/${p.slug}`}>{p.shortName}</a></li>)}
+        {productList.map((p) => <li><a href={u(`/disena/${p.slug}`)}>{p.shortName}</a></li>)}
       </ul>
     </nav>
 
     <nav aria-label="Ayuda">
       <p class="ftr-h">Ayuda</p>
       <ul>
-        <li><a href="/#preguntas">Preguntas frecuentes</a></li>
-        <li><a href="/envios-y-devoluciones">Envíos, cambios y garantía</a></li>
-        <li><a href="/terminos">Términos y condiciones</a></li>
-        <li><a href="/privacidad">Aviso de privacidad</a></li>
+        <li><a href={u("/#preguntas")}>Preguntas frecuentes</a></li>
+        <li><a href={u("/envios-y-devoluciones")}>Envíos, cambios y garantía</a></li>
+        <li><a href={u("/terminos")}>Términos y condiciones</a></li>
+        <li><a href={u("/privacidad")}>Aviso de privacidad</a></li>
       </ul>
     </nav>
 

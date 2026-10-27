@@ -1,4 +1,5 @@
 ---
+import { u } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import { store, whatsappEnabled } from '../config/store';
@@ -39,7 +40,7 @@ const isEndpoint = store.payment.mode === 'endpoint';
         <li><span>3</span> Te enviamos la guía de rastreo. Llega en {store.timing.totalDays}.</li>
       </ol>
 
-      <a href="/" class="link-arrow">Volver a la tienda <Icon name="arrow" size={16} /></a>
+      <a href={u("/")} class="link-arrow">Volver a la tienda <Icon name="arrow" size={16} /></a>
     </div>
   </section>
 </Base>

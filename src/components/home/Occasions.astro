@@ -1,10 +1,11 @@
 ---
+import { u } from '../../lib/url';
 import Photo from '../Photo.astro';
 const items = [
-  { photo: 'mama', title: 'Para mamá', text: 'Con la inicial de cada hijo', href: '/disena/nombre?estilo=iniciales&nombre=S', alt: 'Mamá cargando a su hija, con un collar de inicial dorada' },
-  { photo: 'placa-plata', title: 'Para él', text: 'Placa en plata .950', href: '/disena/placa?metal=plata950&letra=serif&nombre=Diego', alt: 'Hombre con un collar de placa de plata con el nombre Diego' },
-  { photo: 'mascota-lifestyle', title: 'Para quien te espera en casa', text: 'La silueta de tu mascota', href: '/disena/mascota', alt: 'Mujer abrazando a su perro schnauzer, con un dije dorado de perro' },
-  { photo: 'nombre-oro-b', title: 'Para ti', text: 'Tu nombre, recortado en oro', href: '/disena/nombre?nombre=Regina', alt: 'Collar con el nombre Regina recortado en oro' },
+  { photo: 'mama', title: 'Para mamá', text: 'Con la inicial de cada hijo', href: u('/disena/nombre?estilo=iniciales&nombre=S'), alt: 'Mamá cargando a su hija, con un collar de inicial dorada' },
+  { photo: 'placa-plata', title: 'Para él', text: 'Placa en plata .950', href: u('/disena/placa?metal=plata950&letra=serif&nombre=Diego'), alt: 'Hombre con un collar de placa de plata con el nombre Diego' },
+  { photo: 'mascota-lifestyle', title: 'Para quien te espera en casa', text: 'La silueta de tu mascota', href: u('/disena/mascota'), alt: 'Mujer abrazando a su perro schnauzer, con un dije dorado de perro' },
+  { photo: 'nombre-oro-b', title: 'Para ti', text: 'Tu nombre, recortado en oro', href: u('/disena/nombre?nombre=Regina'), alt: 'Collar con el nombre Regina recortado en oro' },
 ];
 ---
 
