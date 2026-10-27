@@ -1,0 +1,1 @@
+var e={ViewContent:`ViewContent`,AddToCart:`AddToCart`,InitiateCheckout:`InitiateCheckout`,AddPaymentInfo:`AddPaymentInfo`,Purchase:`CompletePayment`,Lead:`SubmitForm`};function t(t,n={},r){try{window.fbq?.(`track`,t,{currency:`MXN`,...n},r?{eventID:r}:void 0),window.ttq?.track(e[t],{currency:`MXN`,...n})}catch{}}export{t};

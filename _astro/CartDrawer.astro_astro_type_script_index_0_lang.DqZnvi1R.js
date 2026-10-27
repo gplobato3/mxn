@@ -1,0 +1,17 @@
+import{n as e,o as t}from"./catalog.B7nvC-Fd.js";import{n,r,t as i}from"./format.Ce5pL80g.js";import{i as a,t as o}from"./pendant.DgaUImGb.js";var s=document.querySelector(`[data-cart]`),c=s.querySelector(`[data-cart-lines]`),l=s.querySelector(`[data-cart-empty]`),u=s.querySelector(`[data-cart-foot]`),d=s.querySelector(`[data-cart-upsell]`),f=document.querySelectorAll(`[data-cart-count]`),p=r.shipping.find(e=>e.enabled)?.price??0,m=e=>e.replace(/[&<>"]/g,e=>({"&":`&amp;`,"<":`&lt;`,">":`&gt;`,'"':`&quot;`})[e]);function h(o){let s=t[o.design.product],c=n.unit(o),l=[o.design.giftBox?r.addons.giftBox.label:``,o.design.giftNote?`Con dedicatoria`:``].filter(Boolean).join(` · `);return`<li data-id="${o.id}">
+      <div class="thumb">${a(o.design)}</div>
+      <div>
+        <p class="l-title">${m(s.shortName)}</p>
+        <p class="l-text">“${m(o.design.text)}”</p>
+        <p class="l-meta">${m(e(o.design))}${l?`<br>`+m(l):``}</p>
+        <div class="l-row">
+          <div class="qty" role="group" aria-label="Cantidad">
+            <button type="button" data-dec aria-label="Quitar uno">−</button>
+            <span>${o.qty}</span>
+            <button type="button" data-inc aria-label="Agregar uno">+</button>
+          </div>
+          <span class="l-price">${i(c*o.qty)}</span>
+        </div>
+        <button type="button" class="rm" data-rm>Eliminar</button>
+      </div>
+    </li>`}function g(){let e=n.lines(),t=n.count();f.forEach(e=>{e.hidden=t===0,e.textContent!==String(t)&&(e.textContent=String(t),e.classList.remove(`bump`),e.offsetWidth,e.classList.add(`bump`))}),s.querySelector(`[data-cart-n]`).textContent=t?`(${t})`:``,c.innerHTML=e.map(h).join(``),l.hidden=e.length>0,u.hidden=e.length===0,d.hidden=!(e.length>0&&t<r.bundle.minItems);let a=n.totals(p);s.querySelector(`[data-sum-sub]`).textContent=i(a.subtotal),s.querySelector(`[data-sum-disc]`).textContent=`−${i(a.discount)}`,s.querySelector(`[data-sum-disc-row]`).hidden=a.discount===0,s.querySelector(`[data-sum-ship]`).textContent=a.shipping?i(a.shipping):`Gratis`,s.querySelector(`[data-sum-total]`).textContent=i(a.total);let o=s.querySelector(`[data-bundle-text]`),m=s.querySelector(`[data-bundle-bar]`);if(o&&m&&r.bundle.enabled){let e=Math.max(0,r.bundle.minItems-t);o.textContent=t===0?r.bundle.label:e>0?`Agrega ${e} pieza más y ahorra ${i(r.bundle.discount)}`:`Listo: ahorraste ${i(r.bundle.discount)} en tu pedido`,m.style.width=`${Math.min(100,t/r.bundle.minItems*100)}%`}}c.addEventListener(`click`,e=>{let t=e.target.closest(`button`),r=e.target.closest(`li[data-id]`);if(!t||!r)return;let i=r.dataset.id,a=n.lines().find(e=>e.id===i);a&&(t.hasAttribute(`data-inc`)&&n.setQty(i,a.qty+1),t.hasAttribute(`data-dec`)&&(a.qty>1?n.setQty(i,a.qty-1):n.remove(i)),t.hasAttribute(`data-rm`)&&n.remove(i))});var _=null;function v(){_=document.activeElement,s.hidden=!1,requestAnimationFrame(()=>s.classList.add(`open`)),document.documentElement.style.overflow=`hidden`,setTimeout(()=>s.querySelector(`[data-cart-close].x`)?.focus(),60)}function y(){s.classList.remove(`open`),document.documentElement.style.overflow=``,setTimeout(()=>s.hidden=!0,450),_?.focus?.()}document.addEventListener(`click`,e=>{let t=e.target;t.closest(`[data-cart-open]`)&&(e.preventDefault(),v()),t.closest(`[data-cart-close]`)&&y()}),document.addEventListener(`keydown`,e=>e.key===`Escape`&&!s.hidden&&y()),window.addEventListener(`cart:open`,v),n.onChange(g),g(),o().then(g);
