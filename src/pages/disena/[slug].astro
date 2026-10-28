@@ -4,6 +4,7 @@ import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import Faq from '../../components/Faq.astro';
 import Photo from '../../components/Photo.astro';
+import Reviews from '../../components/Reviews.astro';
 import { products, productList, materials, chainLengths, fonts, animals, type ProductId } from '../../data/catalog';
 import { petShapes } from '../../lib/shapes';
 import { responsive } from '../../lib/images';
@@ -341,6 +342,8 @@ const textLabel = id === 'mascota' ? 'Nombre de tu mascota' : 'Nombre a grabar';
       </div>
     </div>
   </section>
+
+  <Reviews product={id} />
 
   <section class="section more">
     <div class="wrap">

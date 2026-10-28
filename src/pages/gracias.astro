@@ -9,18 +9,25 @@ const isEndpoint = store.payment.mode === 'endpoint';
 <Base title="Gracias por tu pedido" noindex bare>
   <section class="ty" data-ty>
     <div class="wrap ty-in">
-      <div class="seal" aria-hidden="true"><Icon name="check" size={30} /></div>
-      <p class="eyebrow" data-ty-eyebrow>{isEndpoint ? 'Pedido recibido' : 'Pedido apartado'}</p>
-      <h1 data-ty-title>{isEndpoint ? '¡Gracias! Ya estamos en ello' : 'Falta un paso: confírmalo por WhatsApp'}</h1>
+      <div class="seal" data-ty-seal aria-hidden="true"><Icon name="check" size={30} /></div>
+      <p class="eyebrow" data-ty-eyebrow>{isEndpoint ? 'Un momento' : 'Pedido apartado'}</p>
+      <h1 data-ty-title>{isEndpoint ? 'Verificando tu pago…' : 'Falta un paso: confírmalo por WhatsApp'}</h1>
       <p class="lead" data-ty-lead>
         {
           isEndpoint
-            ? 'Te enviamos la confirmación a tu correo. Antes de grabar te escribiremos por WhatsApp para revisar la ortografía.'
+            ? 'Estamos confirmando tu pago con el banco.'
             : 'Envíanos tu pedido por WhatsApp para recibir el enlace de pago seguro. En cuanto se confirme, grabamos tu pieza.'
         }
       </p>
       <p class="order-id" data-ty-id hidden></p>
 
+      {
+        isEndpoint && (
+          <a class="btn big" href={u('/pago')} data-ty-pay hidden>
+            Ver mis datos de pago
+          </a>
+        )
+      }
       {
         !isEndpoint && whatsappEnabled && (
           <a class="btn btn-gold big" href="#" target="_blank" rel="noopener" data-ty-wa>
@@ -35,7 +42,7 @@ const isEndpoint = store.payment.mode === 'endpoint';
       }
 
       <ol class="next">
-        <li><span>1</span> Confirmamos la ortografía contigo.</li>
+        <li><span>1</span> Confirmamos la ortografía contigo por WhatsApp.</li>
         <li><span>2</span> Grabamos tu pieza en {store.timing.productionDays}.</li>
         <li><span>3</span> Te enviamos la guía de rastreo. Llega en {store.timing.totalDays}.</li>
       </ol>
@@ -66,6 +73,10 @@ const isEndpoint = store.payment.mode === 'endpoint';
     color: var(--ink);
     box-shadow: var(--shadow-1);
     animation: pop 0.8s var(--ease) both;
+    transition: opacity 0.3s;
+  }
+  .seal.wait {
+    opacity: 0.35;
   }
   @keyframes pop {
     from {
@@ -127,35 +138,76 @@ const isEndpoint = store.payment.mode === 'endpoint';
 </style>
 
 <script>
-  import { loadOrder, orderMessage } from '../lib/order';
+  import { fetchOrderStatus, loadOrder, orderMessage } from '../lib/order';
   import { cart } from '../lib/cart';
   import { track } from '../lib/track';
   import { store, whatsappLink } from '../config/store';
+  import { u } from '../lib/url';
 
   const q = new URLSearchParams(location.search);
   const order = loadOrder();
+  const id = q.get('pedido') || order?.id || '';
   const idEl = document.querySelector<HTMLElement>('[data-ty-id]');
-  if (order && idEl) {
-    idEl.textContent = `Pedido ${order.id}`;
+  if (id && idEl) {
+    idEl.textContent = `Pedido ${id}`;
     idEl.hidden = false;
   }
-  const wa = document.querySelector<HTMLAnchorElement>('[data-ty-wa]');
-  if (wa && order) wa.href = whatsappLink(orderMessage(order));
 
-  // modo gateway: só dispara Purchase quando o gateway confirma a aprovação
-  const { key, value } = store.payment.approvedParam;
-  if (store.payment.mode === 'endpoint' && q.get(key) === value && order) {
-    const flag = `nombra.purchased.${order.id}`;
-    if (!localStorage.getItem(flag)) {
-      track('Purchase', { value: order.totals.total, num_items: order.items.length }, order.id);
-      localStorage.setItem(flag, '1');
-    }
-    cart.clear();
-  }
-  if (store.payment.mode === 'endpoint' && q.get(key) && q.get(key) !== value) {
-    document.querySelector('[data-ty-eyebrow]')!.textContent = 'Pago pendiente';
-    document.querySelector('[data-ty-title]')!.textContent = 'Tu pago aún no se confirma';
-    document.querySelector('[data-ty-lead]')!.textContent =
-      'Si pagaste en OXXO o por transferencia, puede tardar unas horas. Tu bolsa sigue guardada por si quieres intentarlo de nuevo.';
+  if (store.payment.mode !== 'endpoint') {
+    const wa = document.querySelector<HTMLAnchorElement>('[data-ty-wa]');
+    if (wa && order) wa.href = whatsappLink(orderMessage(order));
+  } else {
+    const token = q.get('t') || (order?.id === id ? order?.token : '') || '';
+    const set = (eyebrow: string, title: string, lead: string) => {
+      document.querySelector('[data-ty-eyebrow]')!.textContent = eyebrow;
+      document.querySelector('[data-ty-title]')!.textContent = title;
+      document.querySelector('[data-ty-lead]')!.textContent = lead;
+    };
+    const seal = document.querySelector<HTMLElement>('[data-ty-seal]')!;
+    const payBtn = document.querySelector<HTMLAnchorElement>('[data-ty-pay]')!;
+    const payLink = () => {
+      payBtn.href = u(`/pago?pedido=${encodeURIComponent(id)}&t=${encodeURIComponent(token)}`);
+      payBtn.hidden = false;
+    };
+    seal.classList.add('wait');
+
+    (async () => {
+      if (!id || !token) {
+        seal.classList.remove('wait');
+        return set('Pedido recibido', '¡Gracias!', 'Si ya pagaste, te escribiremos por WhatsApp para confirmar la ortografía antes de grabar.');
+      }
+      try {
+        const s = await fetchOrderStatus(id, token);
+        if (!s) return set('Pedido no encontrado', 'No encontramos tu pedido', 'Escríbenos con tu número de pedido y lo revisamos.');
+        if (s.status === 'paid') {
+          seal.classList.remove('wait');
+          set('Pago confirmado', '¡Gracias! Ya estamos en ello', 'Antes de grabar te escribiremos por WhatsApp para revisar la ortografía.');
+          // Purchase só com pagamento confirmado pelo servidor, uma vez por pedido
+          const flag = `nombra.purchased.${s.id}`;
+          if (!localStorage.getItem(flag)) {
+            track('Purchase', { value: s.totals.total, num_items: s.totals.items }, s.id);
+            localStorage.setItem(flag, '1');
+          }
+          cart.clear();
+        } else if (s.status === 'review') {
+          seal.classList.remove('wait');
+          set('Pago recibido', 'Estamos revisando tu pago', 'Recibimos un pago para este pedido y lo estamos verificando. Te escribimos por WhatsApp en cuanto quede listo.');
+        } else if (s.status === 'pending') {
+          set(
+            'Pago pendiente',
+            'Tu pago aún no se confirma',
+            s.method === 'oxxo'
+              ? 'Si ya pagaste en OXXO, la confirmación puede tardar unas horas.'
+              : 'Si ya hiciste la transferencia, la confirmación suele tardar unos minutos.',
+          );
+          payLink();
+        } else {
+          set('Pago vencido', 'Este pago ya venció', 'No recibimos el pago a tiempo. Puedes generar uno nuevo desde tus datos de pago.');
+          payLink();
+        }
+      } catch {
+        set('Sin conexión', 'No pudimos verificar tu pago', 'Revisa tu conexión y recarga esta página.');
+      }
+    })();
   }
 </script>

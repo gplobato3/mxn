@@ -2,6 +2,7 @@
 dist/
 .astro/
 node_modules/
+.wrangler/
 
 # fotos originales sin optimizar (se regeneran con scripts/generate-images.py)
 .image-raw/

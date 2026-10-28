@@ -30,6 +30,34 @@ export interface Order {
   shipping: Address & { method: string };
   spellingConfirmed: boolean;
   source: string;
+  /** Só no modo gateway: método escolhido e segredo para consultar o pedido em /api/order. */
+  payment?: string;
+  token?: string;
+}
+
+/** O que /api/order devolve (worker/orders.ts → publicView). */
+export interface OrderStatusView {
+  id: string;
+  status: 'pending' | 'paid' | 'expired' | 'failed' | 'review';
+  method: 'spei' | 'oxxo';
+  createdAt: string;
+  expiresAt: string | null;
+  paidAt: string | null;
+  sandbox: boolean;
+  totals: { items: number; subtotal: number; discount: number; shipping: number; total: number };
+  items: { title: string; text: string; summary: string; qty: number; unitPrice: number; giftBox: boolean }[];
+  payment: { method: 'spei' | 'oxxo'; amount: number; clabe?: string; bank?: string; beneficiary?: string; reference?: string; barcode?: string };
+}
+
+/** Consulta o estado do pedido no Worker. */
+export async function fetchOrderStatus(id: string, token: string): Promise<OrderStatusView | null> {
+  const res = await fetch(`${store.payment.orderEndpoint}?id=${encodeURIComponent(id)}&t=${encodeURIComponent(token)}`, {
+    headers: { Accept: 'application/json' },
+    cache: 'no-store',
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return (await res.json()) as OrderStatusView;
 }
 
 export function newOrderId(): string {

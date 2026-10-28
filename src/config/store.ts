@@ -88,22 +88,37 @@ export const store = {
   /**
    * Pagamento.
    * - mode 'whatsapp': o pedido é registrado e o cliente fecha o pagamento pelo WhatsApp
-   *   (funciona hoje, sem gateway).
-   * - mode 'endpoint': o checkout faz POST do pedido para PUBLIC_CHECKOUT_ENDPOINT e
-   *   redireciona para a URL retornada pelo seu gateway. Veja README.md.
-   * Se PUBLIC_CHECKOUT_ENDPOINT estiver definido no .env, o modo endpoint é usado automaticamente.
+   *   (funciona sem gateway).
+   * - mode 'endpoint': o checkout faz POST do pedido para PUBLIC_CHECKOUT_ENDPOINT (o Worker em
+   *   worker/index.ts), que recalcula o preço, cria a cobrança na xpag e devolve a página /pago
+   *   com a CLABE (SPEI) ou a referência (OXXO). Veja README.md.
+   * Se PUBLIC_CHECKOUT_ENDPOINT estiver definido no build, o modo endpoint é usado automaticamente.
    */
   payment: {
     mode: (env.PUBLIC_CHECKOUT_ENDPOINT ? 'endpoint' : 'whatsapp') as 'endpoint' | 'whatsapp',
     endpoint: env.PUBLIC_CHECKOUT_ENDPOINT || '',
-    // Texto exibido no checkout sobre os meios aceitos. Ajuste ao seu gateway.
-    methodsNote: 'Tarjeta de crédito o débito, OXXO y transferencia SPEI',
+    // Consulta do estado do pedido (a página /pago e /gracias usam).
+    orderEndpoint: env.PUBLIC_ORDER_ENDPOINT || '/api/order',
+    // Meios aceitos pela xpag em MXN. `max` é o teto por cobrança (OXXO aceita até 10.000 MXN).
+    methods: [
+      {
+        id: 'spei',
+        label: 'Transferencia SPEI',
+        detail: 'Desde la app de tu banco. Se confirma en minutos.',
+        max: 100000,
+      },
+      {
+        id: 'oxxo',
+        label: 'Efectivo en OXXO',
+        detail: 'Paga en cualquier OXXO con tu número de referencia.',
+        max: 10000,
+      },
+    ],
+    // Texto curto sobre os meios aceitos (rodapé, FAQ, termos).
+    methodsNote: 'Transferencia SPEI o efectivo en OXXO',
     // Opcional: URL de webhook (Make, Zapier, Google Apps Script, n8n...) que recebe cada
     // pedido em JSON no modo WhatsApp, para você não depender do cliente mandar a mensagem.
     orderWebhook: env.PUBLIC_ORDER_WEBHOOK || '',
-    // Parâmetro que o seu gateway devolve em /gracias quando o pagamento foi aprovado.
-    // Só com ele o evento Purchase é disparado no pixel.
-    approvedParam: { key: 'status', value: 'approved' },
   },
 
   analytics: {

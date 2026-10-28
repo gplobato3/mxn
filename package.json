@@ -8,7 +8,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check",
+    "check": "astro check && tsc -p worker",
+    "build:cf": "PUBLIC_CHECKOUT_ENDPOINT=/api/checkout SITE_URL=${SITE_URL:-https://nombra.timelapse.workers.dev} PUBLIC_NOINDEX=${PUBLIC_NOINDEX:-1} astro build",
+    "deploy": "npm run build:cf && wrangler d1 migrations apply nombra-pedidos --remote && wrangler deploy",
     "brand": "python3 scripts/build-brand.py && node scripts/build-og.mjs"
   },
   "engines": {
@@ -20,6 +22,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
-    "typescript": "^6.0.3"
+    "@cloudflare/workers-types": "^5.20261027.1",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.154.0"
   }
 }

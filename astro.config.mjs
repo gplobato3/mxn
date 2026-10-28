@@ -19,7 +19,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !/\/(checkout|gracias)$/.test(page),
+      filter: (page) => !/\/(checkout|pago|gracias)$/.test(page),
     }),
   ],
 });

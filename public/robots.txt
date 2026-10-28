@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /checkout
-Disallow: /gracias
-
-Sitemap: https://www.nombra.mx/sitemap-index.xml

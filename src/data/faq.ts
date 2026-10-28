@@ -43,7 +43,7 @@ export const faqs: Faq[] = [
     q: '¿Cómo puedo pagar?',
     a:
       store.payment.mode === 'endpoint'
-        ? `Pagas en un entorno seguro: ${store.payment.methodsNote}.`
+        ? 'Por transferencia SPEI desde la app de tu banco (se confirma en minutos) o en efectivo en cualquier OXXO con tu número de referencia. Solo grabamos tu pieza cuando el pago está confirmado.'
         : 'Al confirmar tu pedido te enviamos por WhatsApp el enlace de pago seguro. Solo grabamos tu pieza cuando el pago está confirmado.',
   },
 ];

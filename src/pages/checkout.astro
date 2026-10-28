@@ -113,6 +113,24 @@ const isEndpoint = store.payment.mode === 'endpoint';
 
         <fieldset class="block">
           <legend><span class="num">3</span> {isEndpoint ? 'Pago' : 'Confirmación'}</legend>
+          {
+            isEndpoint && (
+              <div class="pay-opts" role="radiogroup" aria-label="Método de pago">
+                {store.payment.methods.map((m, i) => (
+                  <label class="ship pay">
+                    <input type="radio" name="payment" value={m.id} checked={i === 0} data-pay-max={m.max} />
+                    <span>
+                      <i class="pay-ico" aria-hidden="true">
+                        <Icon name={m.id === 'oxxo' ? 'store' : 'bank'} size={22} />
+                      </i>
+                      <strong>{m.label}</strong>
+                      <small>{m.detail}</small>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )
+          }
           <label class="confirm">
             <input type="checkbox" name="spelling" required data-spelling />
             <span>Revisé que los nombres estén escritos exactamente como los quiero grabar.</span>
@@ -120,7 +138,7 @@ const isEndpoint = store.payment.mode === 'endpoint';
           {
             isEndpoint ? (
               <p class="pay-note">
-                <Icon name="lock" size={16} /> Serás dirigido a un pago seguro: {store.payment.methodsNote}.
+                <Icon name="lock" size={16} /> En el siguiente paso te mostramos los datos para pagar. Solo grabamos tu pieza cuando el pago está confirmado.
               </p>
             ) : (
               <div class="pay-note card">
@@ -135,7 +153,7 @@ const isEndpoint = store.payment.mode === 'endpoint';
           <p class="error-text" data-form-error hidden></p>
           <button class="btn btn-block submit" type="submit" data-submit>
             <Icon name="lock" size={18} />
-            <span>{isEndpoint ? 'Pagar' : 'Confirmar pedido'}</span>
+            <span>{isEndpoint ? 'Continuar al pago' : 'Confirmar pedido'}</span>
             <span aria-hidden="true">·</span>
             <span data-btn-total></span>
           </button>
@@ -392,6 +410,32 @@ const isEndpoint = store.payment.mode === 'endpoint';
     grid-column: 2;
     align-self: center;
   }
+  .pay-opts {
+    display: grid;
+    gap: 8px;
+  }
+  .pay span {
+    grid-template-columns: auto 1fr;
+    column-gap: 14px;
+    align-items: center;
+  }
+  .pay .pay-ico {
+    grid-row: 1 / span 2;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: var(--ivory);
+    color: var(--gold-deep);
+  }
+  .pay small {
+    grid-column: 2;
+  }
+  .pay input:checked + span .pay-ico {
+    background: var(--ink);
+    color: var(--ivory);
+  }
   .confirm {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -478,7 +522,7 @@ const isEndpoint = store.payment.mode === 'endpoint';
   import { renderStudio, loadPreviewFonts } from '../lib/pendant';
   import { money } from '../lib/format';
   import { track } from '../lib/track';
-  import { buildOrder, saveOrder } from '../lib/order';
+  import { buildOrder, saveOrder, type Order } from '../lib/order';
   import { matchState } from '../data/mx-states';
   import { store } from '../config/store';
   import { u } from '../lib/url';
@@ -622,17 +666,46 @@ const isEndpoint = store.payment.mode === 'endpoint';
     btn.disabled = true;
 
     if (store.payment.mode === 'endpoint' && store.payment.endpoint) {
+      const pay = form.querySelector<HTMLInputElement>('input[name="payment"]:checked');
+      if (!pay) {
+        btn.disabled = false;
+        return fail('Elige un método de pago.');
+      }
+      const max = Number(pay.dataset.payMax || Infinity);
+      if (order.totals.total > max) {
+        btn.disabled = false;
+        return fail(`Para compras mayores a ${money(max)} elige transferencia SPEI.`, pay);
+      }
+      const label = btn.querySelector('span');
+      if (label) label.textContent = 'Generando tu pago…';
       try {
+        // O servidor recalcula preço, desconto e frete: mandamos só as escolhas do cliente.
         const res = await fetch(store.payment.endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(order),
+          body: JSON.stringify({
+            items: lines.map((l) => ({ ...l.design, qty: l.qty })),
+            customer: order.customer,
+            shipping: order.shipping,
+            payment: pay.value,
+            spellingConfirmed: true,
+            source: location.href,
+          }),
         });
-        const data = (await res.json().catch(() => ({}))) as { redirectUrl?: string; error?: string };
-        if (!res.ok || !data.redirectUrl) throw new Error(data.error || 'No pudimos iniciar el pago.');
-        location.href = data.redirectUrl;
+        const data = (await res.json().catch(() => ({}))) as {
+          id?: string;
+          token?: string;
+          redirectUrl?: string;
+          error?: string;
+          order?: { totals: Order['totals'] };
+        };
+        if (!res.ok || !data.redirectUrl || !data.id || !data.token) throw new Error(data.error || 'No pudimos generar tu pago.');
+        saveOrder({ ...order, id: data.id, token: data.token, payment: pay.value, totals: data.order?.totals ?? order.totals });
+        cart.clear();
+        location.href = u(data.redirectUrl);
       } catch (err) {
         btn.disabled = false;
+        if (label) label.textContent = 'Continuar al pago';
         fail(`${(err as Error).message} Intenta de nuevo o escríbenos.`);
       }
       return;

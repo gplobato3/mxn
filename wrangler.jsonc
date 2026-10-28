@@ -1,0 +1,38 @@
+// Cloudflare Worker: site estático (dist/) + API de pagamento (worker/).
+// Deploy: npm run deploy   ·   Segredos: npx wrangler secret put NOME (veja README).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nombra",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    // só estas rotas passam pelo código; o resto é arquivo estático direto da borda
+    "run_worker_first": ["/api/*", "/admin", "/admin/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "nombra-pedidos",
+      "database_id": "4c1b036b-ea25-40be-a7e2-1edba6cb2b4f",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "ratelimits": [
+    {
+      // até 8 tentativas de checkout por minuto por IP
+      "name": "CHECKOUT_LIMITER",
+      "namespace_id": "4801",
+      "simple": { "limit": 8, "period": 60 }
+    }
+  ],
+  "vars": {
+    "XPAG_API_URL": "https://api.xpag.global"
+  },
+  "observability": { "enabled": true }
+}

@@ -1,0 +1,559 @@
+---
+import { u } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { whatsappEnabled } from '../config/store';
+---
+
+<Base title="Completa tu pago" noindex bare>
+  <section class="pay" data-pay>
+    <div class="wrap pay-in">
+      <div class="state" data-s="loading">
+        <span class="spinner" aria-hidden="true"></span>
+        <p>Cargando tus datos de pago…</p>
+      </div>
+
+      <div class="state" data-s="missing" hidden>
+        <h1>No encontramos tu pedido</h1>
+        <p class="lead">Abre el enlace desde el mismo teléfono con el que hiciste la compra, o escríbenos con tu número de pedido.</p>
+        <a class="btn" href={u('/')}>Volver a la tienda</a>
+      </div>
+
+      <div class="state" data-s="expired" hidden>
+        <h1>Este pago ya venció</h1>
+        <p class="lead">No recibimos el pago a tiempo. Tu diseño sigue guardado: genera un pago nuevo en un minuto.</p>
+        <button type="button" class="btn" data-retry>Volver a intentar</button>
+      </div>
+
+      <div class="ready" data-s="ready" hidden>
+        <p class="sandbox" data-sandbox hidden>Modo de prueba: este pago no es real.</p>
+
+        <header class="head">
+          <p class="eyebrow">Pedido <span data-id></span></p>
+          <h1 data-title>Completa tu pago</h1>
+          <p class="live" data-live-box><i aria-hidden="true"></i><span data-live aria-live="polite">Esperando tu pago</span></p>
+        </header>
+
+        <div class="ticket">
+          <div class="row amount">
+            <span class="lbl">Monto exacto</span>
+            <strong data-amount></strong>
+            <button type="button" class="copy" data-copy="amount" aria-label="Copiar monto"><Icon name="copy" size={18} /></button>
+          </div>
+
+          <div class="method" data-m="spei" hidden>
+            <div class="row code">
+              <span class="lbl">CLABE interbancaria</span>
+              <code class="big" data-clabe></code>
+              <button type="button" class="btn btn-block copy-main" data-copy="clabe"><Icon name="copy" size={18} /> <span>Copiar CLABE</span></button>
+            </div>
+            <dl class="kv">
+              <div><dt>Banco</dt><dd data-bank></dd></div>
+              <div><dt>Beneficiario</dt><dd data-beneficiary></dd></div>
+            </dl>
+            <p class="small" data-beneficiary-note>El beneficiario es nuestro procesador de pagos. Así aparece en tu banco.</p>
+          </div>
+
+          <div class="method" data-m="oxxo" hidden>
+            <div class="row code">
+              <span class="lbl">Número de referencia OXXO</span>
+              <code class="big" data-ref></code>
+              <button type="button" class="btn btn-block copy-main" data-copy="ref"><Icon name="copy" size={18} /> <span>Copiar referencia</span></button>
+            </div>
+            <div class="barcode" data-barcode-box hidden>
+              <img alt="Código de barras para pagar en OXXO" data-barcode decoding="async" />
+            </div>
+          </div>
+
+          <p class="exp"><Icon name="clock" size={16} /> <span data-exp></span></p>
+        </div>
+
+        <ol class="how" data-how="spei" hidden>
+          <li><span>1</span><p>Abre la app de tu banco y elige <strong>transferir a otro banco (SPEI)</strong>.</p></li>
+          <li><span>2</span><p>Pega la <strong>CLABE</strong>. El banco destino aparece solo.</p></li>
+          <li><span>3</span><p>Escribe el <strong>monto exacto</strong>. Si envías otra cantidad, la transferencia se devuelve.</p></li>
+          <li><span>4</span><p>Confirma. <strong>Esta página se actualiza sola</strong> cuando recibimos tu pago.</p></li>
+        </ol>
+
+        <ol class="how" data-how="oxxo" hidden>
+          <li><span>1</span><p>Ve a cualquier <strong>OXXO</strong> y di en caja que quieres hacer un pago con referencia (OXXO Pay).</p></li>
+          <li><span>2</span><p>Muestra el <strong>código de barras</strong> o dicta el número de referencia.</p></li>
+          <li><span>3</span><p>Paga en efectivo el <strong>monto exacto</strong>. OXXO puede cobrar una comisión en caja.</p></li>
+          <li><span>4</span><p>Guarda tu ticket. Cuando se confirme el pago te escribimos por WhatsApp.</p></li>
+        </ol>
+        <p class="tip" data-tip hidden>Toma una captura de esta pantalla para tenerla a la mano en la tienda.</p>
+
+        <details class="sum">
+          <summary><span>Tu pedido</span> <strong data-sum-total></strong></summary>
+          <ul data-items></ul>
+        </details>
+
+        <p class="help">
+          <Icon name="shield" size={16} /> Solo grabamos tu pieza cuando el pago está confirmado.
+          {whatsappEnabled && <a href="#" data-help-wa target="_blank" rel="noopener">¿Dudas? Escríbenos</a>}
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .pay {
+    padding: 22px 0 72px;
+  }
+  .pay-in {
+    max-width: 560px;
+  }
+  .state {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 14px;
+    padding: 48px 0;
+  }
+  .state h1 {
+    font-size: clamp(2rem, 6vw, 2.8rem);
+  }
+  .spinner {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 3px solid var(--line-2);
+    border-top-color: var(--gold-deep);
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+  .ready {
+    display: grid;
+    gap: 18px;
+  }
+  .sandbox {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--ink);
+    color: var(--ivory);
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-align: center;
+  }
+  .head {
+    display: grid;
+    gap: 6px;
+    text-align: center;
+    justify-items: center;
+  }
+  .head h1 {
+    font-size: clamp(2rem, 7vw, 2.9rem);
+  }
+  .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 99px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .live i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 1.8s infinite;
+  }
+  .live.ok i {
+    background: var(--ok);
+    animation: none;
+  }
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgb(176 138 78 / 0.55);
+    }
+    70% {
+      box-shadow: 0 0 0 9px rgb(176 138 78 / 0);
+    }
+  }
+  .ticket {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 18px;
+    display: grid;
+    gap: 18px;
+    box-shadow: var(--shadow-1);
+  }
+  .row {
+    display: grid;
+    gap: 6px;
+  }
+  .lbl {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .amount {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed var(--line-2);
+  }
+  .amount .lbl {
+    grid-column: 1 / -1;
+  }
+  .amount strong {
+    font-family: var(--serif);
+    font-size: 2.6rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .copy {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid var(--line-2);
+    background: var(--ivory);
+    display: grid;
+    place-items: center;
+    color: var(--ink);
+  }
+  .copy.done,
+  .copy-main.done {
+    background: var(--ok);
+    border-color: var(--ok);
+    color: #fff;
+  }
+  .big {
+    font-family: var(--sans);
+    font-size: min(1.75rem, 5.4vw);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+    padding: 12px 0 6px;
+  }
+  .copy-main {
+    min-height: 54px;
+    gap: 8px;
+  }
+  .kv {
+    margin: 2px 0 0;
+    display: grid;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+  .kv div {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    border-top: 1px solid var(--line);
+    padding-top: 8px;
+  }
+  .kv dt {
+    color: var(--muted);
+  }
+  .kv dd {
+    margin: 0;
+    font-weight: 600;
+    text-align: right;
+  }
+  .small {
+    font-size: 0.76rem;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .barcode {
+    background: #fff;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+    padding: 14px;
+    display: grid;
+    place-items: center;
+  }
+  .barcode img {
+    width: 100%;
+    max-height: 110px;
+    object-fit: contain;
+  }
+  .exp {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    margin: 0;
+  }
+  .how {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .how li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-size: 0.92rem;
+  }
+  .how span {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    color: var(--ivory);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .how p {
+    margin: 2px 0 0;
+  }
+  .tip {
+    text-align: center;
+    font-size: 0.84rem;
+    color: var(--muted);
+    margin: -6px 0 0;
+  }
+  .sum {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+  }
+  .sum summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .sum summary::-webkit-details-marker {
+    display: none;
+  }
+  .sum ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 16px 12px;
+    display: grid;
+    gap: 10px;
+  }
+  .sum :global(li) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px 12px;
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+    font-size: 0.85rem;
+  }
+  .sum :global(.x) {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.15rem;
+  }
+  .sum :global(.m) {
+    color: var(--muted);
+    font-size: 0.75rem;
+    grid-column: 1;
+  }
+  .sum :global(.p) {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    align-self: center;
+    font-weight: 600;
+  }
+  .help {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--muted);
+    text-align: center;
+  }
+  .help :global(svg) {
+    color: var(--ok);
+  }
+  .help a {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  @media (min-width: 900px) {
+    .pay {
+      padding-top: 40px;
+    }
+    .ticket {
+      padding: 26px 26px;
+    }
+  }
+</style>
+
+<script>
+  import { fetchOrderStatus, loadOrder, type OrderStatusView } from '../lib/order';
+  import { cart } from '../lib/cart';
+  import { store, whatsappLink } from '../config/store';
+  import { u } from '../lib/url';
+
+  const root = document.querySelector<HTMLElement>('[data-pay]')!;
+  const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+  const exact = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
+  const fmt = (n: number) => exact.format(n).replace(/\s?MXN/, '');
+  // CLABE (18 dígitos) em grupos de 3; referência OXXO (16) em grupos de 4. Copiar leva só os dígitos.
+  const groups = (s: string, n: number) => s.replace(/\s/g, '').replace(new RegExp(`(.{${n}})(?=.)`, 'g'), '$1 ');
+  const sentence = (s: string) => (/[.!?]$/.test(s) ? s : `${s}.`);
+
+  const q = new URLSearchParams(location.search);
+  const saved = loadOrder();
+  const id = q.get('pedido') || saved?.id || '';
+  const token = q.get('t') || (saved?.id === id ? saved?.token : '') || '';
+  let copyValues: Record<string, string> = {};
+  let method: 'spei' | 'oxxo' = 'spei';
+  let stopped = false;
+  let timer: number | undefined;
+  const started = Date.now();
+
+  function show(state: 'loading' | 'missing' | 'expired' | 'ready') {
+    root.querySelectorAll<HTMLElement>('[data-s]').forEach((el) => (el.hidden = el.dataset.s !== state));
+  }
+
+  function render(s: OrderStatusView) {
+    method = s.method;
+    const p = s.payment;
+    $('[data-id]').textContent = s.id;
+    $('[data-sandbox]').hidden = !s.sandbox;
+    $('[data-title]').textContent = method === 'oxxo' ? 'Paga en efectivo en OXXO' : 'Transfiere por SPEI';
+    $('[data-amount]').textContent = fmt(p.amount);
+    root.querySelectorAll<HTMLElement>('[data-m]').forEach((el) => (el.hidden = el.dataset.m !== method));
+    root.querySelectorAll<HTMLElement>('[data-how]').forEach((el) => (el.hidden = el.dataset.how !== method));
+    $('[data-tip]').hidden = method !== 'oxxo';
+    copyValues = { amount: p.amount.toFixed(2), clabe: p.clabe || '', ref: p.reference || '' };
+
+    if (method === 'spei') {
+      $('[data-clabe]').textContent = groups(p.clabe || '', 3);
+      $('[data-bank]').textContent = p.bank || '';
+      $('[data-beneficiary]').textContent = p.beneficiary || '';
+      $('[data-bank]').parentElement!.hidden = !p.bank;
+      $('[data-beneficiary]').parentElement!.hidden = !p.beneficiary;
+      $('[data-beneficiary-note]').hidden = !p.beneficiary;
+    } else {
+      $('[data-ref]').textContent = groups(p.reference || '', 4);
+      const img = $<HTMLImageElement>('[data-barcode]');
+      if (p.barcode && img.src !== p.barcode) img.src = p.barcode;
+      $('[data-barcode-box]').hidden = !p.barcode;
+    }
+    if (s.expiresAt) {
+      const d = new Date(s.expiresAt).toLocaleString('es-MX', { day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' });
+      $('[data-exp]').textContent = method === 'oxxo' ? `Tienes hasta el ${d} para pagar.` : sentence(`Esta CLABE es solo para este pedido. Vence el ${d}`);
+    }
+    $('[data-sum-total]').textContent = fmt(s.totals.total);
+    $('[data-items]').innerHTML = s.items
+      .map(
+        (i) =>
+          `<li><span>${esc(i.title)}${i.qty > 1 ? ` ×${i.qty}` : ''}</span><span class="p">${fmt(i.unitPrice * i.qty)}</span><span class="x">“${esc(i.text)}”</span><span class="m">${esc(i.summary)}${i.giftBox ? ' · Estuche' : ''}</span></li>`,
+      )
+      .join('');
+    const wa = root.querySelector<HTMLAnchorElement>('[data-help-wa]');
+    if (wa) wa.href = whatsappLink(`Hola ${store.brand.name}, tengo una duda sobre el pago de mi pedido ${s.id}.`);
+    show('ready');
+  }
+
+  function apply(s: OrderStatusView) {
+    if (s.status === 'paid' || s.status === 'review') {
+      stopped = true;
+      render(s);
+      $('[data-live-box]').classList.add('ok');
+      $('[data-live]').textContent = '¡Pago recibido!';
+      setTimeout(() => location.replace(u(`/gracias?pedido=${encodeURIComponent(s.id)}&t=${encodeURIComponent(token)}`)), 1200);
+      return;
+    }
+    if (s.status === 'expired' || s.status === 'failed') {
+      stopped = true;
+      show('expired');
+      return;
+    }
+    render(s);
+  }
+
+  async function poll() {
+    if (stopped) return;
+    try {
+      const s = await fetchOrderStatus(id, token);
+      if (!s) {
+        stopped = true;
+        return show('missing');
+      }
+      apply(s);
+    } catch {
+      /* sem rede: tenta de novo no próximo ciclo */
+      if (!copyValues.amount) show('loading');
+    }
+    schedule();
+  }
+
+  function schedule() {
+    clearTimeout(timer);
+    if (stopped) return;
+    // SPEI confirma em minutos: consulta a cada 6 s nos primeiros 30 min. OXXO pode levar horas.
+    const ms = method === 'spei' && Date.now() - started < 30 * 60_000 ? 6000 : 30000;
+    timer = window.setTimeout(() => (document.visibilityState === 'visible' ? poll() : schedule()), ms);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    // quem volta do app do banco vê o estado na hora
+    if (document.visibilityState === 'visible' && !stopped) poll();
+  });
+
+  root.addEventListener('click', async (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-copy]');
+    if (btn) {
+      const value = copyValues[btn.dataset.copy!] || '';
+      try {
+        await navigator.clipboard.writeText(value);
+      } catch {
+        const ta = Object.assign(document.createElement('textarea'), { value });
+        document.body.append(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+      const label = btn.querySelector('span');
+      const before = label?.textContent;
+      btn.classList.add('done');
+      if (label) label.textContent = 'Copiado';
+      setTimeout(() => {
+        btn.classList.remove('done');
+        if (label && before) label.textContent = before;
+      }, 1800);
+      return;
+    }
+    if ((e.target as HTMLElement).closest('[data-retry]')) {
+      // devolve as peças à bolsa para gerar um pagamento novo
+      if (saved?.id === id && cart.lines().length === 0) {
+        for (const it of saved.items) {
+          const { qty, unitPrice: _u, title: _t, ...design } = it;
+          cart.add(design, qty);
+        }
+      }
+      location.href = u(cart.lines().length ? '/checkout' : '/');
+    }
+  });
+
+  if (!id || !token) show('missing');
+  else poll();
+</script>

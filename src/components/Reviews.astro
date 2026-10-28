@@ -1,0 +1,252 @@
+---
+import Photo from './Photo.astro';
+import { reviews, ratingSummary } from '../data/reviews';
+import { products, type ProductId } from '../data/catalog';
+
+interface Props {
+  /** Na página de um produto, as avaliações dele aparecem primeiro. */
+  product?: ProductId;
+  id?: string;
+}
+const { product, id = 'opiniones' } = Astro.props;
+
+const list = product ? [...reviews].sort((a, b) => Number(b.product === product) - Number(a.product === product)) : reviews;
+const { count, average } = ratingSummary(list);
+const STAR = 'M12 2.6l2.85 5.78 6.38.93-4.62 4.5 1.09 6.35L12 17.16l-5.7 3 1.09-6.35-4.62-4.5 6.38-.93L12 2.6Z';
+const avg = average.toLocaleString('es-MX', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+---
+
+{
+  count > 0 && (
+    <section class="section reviews" id={id} aria-labelledby={`${id}-t`}>
+      <div class="wrap">
+        <div class="head">
+          <div class="section-head">
+            <p class="eyebrow" data-reveal>Opiniones</p>
+            <h2 id={`${id}-t`} data-reveal style="--d:.06s">
+              Lo que dicen <em class="italic">quienes ya lo llevan</em>
+            </h2>
+          </div>
+          <div class="score" data-reveal style="--d:.12s" aria-label={`Calificación promedio ${avg} de 5, ${count} opiniones`}>
+            <strong>{avg}</strong>
+            <span class="score-r">
+              <span class="stars" aria-hidden="true">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <svg viewBox="0 0 24 24" class={n <= Math.round(average) ? 'on' : ''}>
+                    <path d={STAR} />
+                  </svg>
+                ))}
+              </span>
+              <small>
+                {count} {count === 1 ? 'opinión' : 'opiniones'}
+              </small>
+            </span>
+          </div>
+        </div>
+
+        <ul class="track">
+          {list.map((r, i) => (
+            <li class="card" data-reveal style={`--d:${0.08 * i}s`}>
+              {r.photo && (
+                <div class="ph">
+                  <Photo name={r.photo} alt={r.photoAlt || `Foto de ${r.author}`} sizes="(min-width: 900px) 25vw, 80vw" widths={[360, 540, 720]} />
+                </div>
+              )}
+              <div class="body">
+                <span class="stars" role="img" aria-label={`${r.rating} de 5 estrellas`}>
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <svg viewBox="0 0 24 24" class={n <= r.rating ? 'on' : ''} aria-hidden="true">
+                      <path d={STAR} />
+                    </svg>
+                  ))}
+                </span>
+                <blockquote>
+                  <p>{r.text}</p>
+                </blockquote>
+                <footer>
+                  <span class="mono" aria-hidden="true">
+                    {r.author.charAt(0).toUpperCase()}
+                  </span>
+                  <span class="who">
+                    <strong>{r.author}</strong>
+                    {r.product && <small>{products[r.product].shortName}</small>}
+                  </span>
+                </footer>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .reviews {
+    overflow: hidden;
+  }
+  .head {
+    display: grid;
+    gap: 18px;
+    margin-bottom: 26px;
+  }
+  .head .section-head {
+    margin-bottom: 0;
+  }
+  .score {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    justify-self: start;
+    padding: 12px 18px 12px 16px;
+    border-radius: 99px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+  .score strong {
+    font-family: var(--serif);
+    font-size: 2.4rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .score-r {
+    display: grid;
+    gap: 3px;
+  }
+  .score small {
+    font-size: 0.76rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .stars {
+    display: inline-flex;
+    gap: 2px;
+  }
+  .stars svg {
+    width: 17px;
+    height: 17px;
+    fill: var(--line-2);
+  }
+  .stars svg.on {
+    fill: var(--gold);
+  }
+  .score .stars svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .track {
+    list-style: none;
+    margin: 0 calc(var(--gutter) * -1);
+    padding: 4px var(--gutter) 10px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(84%, 340px);
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+  .card {
+    scroll-snap-align: start;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: relative;
+  }
+  .ph {
+    aspect-ratio: 4 / 5;
+    background: var(--sand);
+  }
+  .body {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 14px;
+    padding: 22px 20px 20px;
+    position: relative;
+  }
+  .body::before {
+    content: '“';
+    position: absolute;
+    right: 16px;
+    top: -4px;
+    font-family: var(--serif);
+    font-size: 6.5rem;
+    line-height: 1;
+    color: var(--gold-soft);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  blockquote {
+    margin: 0;
+  }
+  blockquote p {
+    font-family: var(--serif), 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+    font-size: 1.22rem;
+    line-height: 1.38;
+    color: var(--ink);
+    margin: 0;
+    position: relative;
+  }
+  footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .mono {
+    width: 36px;
+    height: 36px;
+    flex: none;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--gold-grad);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  .who {
+    display: grid;
+    line-height: 1.25;
+  }
+  .who strong {
+    font-size: 0.9rem;
+  }
+  .who small {
+    font-size: 0.74rem;
+    color: var(--muted);
+  }
+
+  @media (min-width: 900px) {
+    .head {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      margin-bottom: 34px;
+    }
+    .score {
+      justify-self: end;
+    }
+    .track {
+      margin: 0;
+      padding: 0;
+      grid-auto-flow: row;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      overflow: visible;
+    }
+    .body {
+      padding: 26px 24px 22px;
+    }
+  }
+</style>
